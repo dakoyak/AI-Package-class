@@ -1,0 +1,517 @@
+.sd-module.sd-forest {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 20px 30px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at top, #fcf6e3 0%, #d4eacb 40%, #8ab78b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.sd-layout {
+  display: flex;
+  gap: 24px;
+  z-index: 2;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.sd-left {
+  flex: 1.3;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sd-right {
+  flex: 1.1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sd-forest-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.sd-forest-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #26472f;
+  margin: 0 0 6px;
+}
+
+.sd-forest-header p {
+  font-size: 14px;
+  color: #3f6045;
+  margin: 0;
+}
+
+.sd-forest-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sd-tree {
+  position: absolute;
+  bottom: -20px;
+}
+
+.sd-tree-left {
+  left: -10px;
+  width: 180px;
+  height: 240px;
+}
+
+.sd-tree-right {
+  right: -10px;
+  width: 180px;
+  height: 240px;
+}
+
+.sd-tree-left::before,
+.sd-tree-left::after,
+.sd-tree-right::before,
+.sd-tree-right::after {
+  content: '';
+  position: absolute;
+  border-radius: 100px;
+}
+
+.sd-tree-left::before {
+  width: 28px;
+  height: 120px;
+  background: #7a4f2c;
+  bottom: 0;
+  left: 70px;
+}
+
+.sd-tree-left::after {
+  width: 160px;
+  height: 120px;
+  background: radial-gradient(circle, #7ac271, #396b3f 70%);
+  bottom: 80px;
+  left: 10px;
+}
+
+.sd-tree-right::before {
+  width: 24px;
+  height: 115px;
+  background: #7a4f2c;
+  bottom: 0;
+  left: 90px;
+}
+
+.sd-tree-right::after {
+  width: 150px;
+  height: 115px;
+  background: radial-gradient(circle, #84c878, #406e3d 70%);
+  bottom: 75px;
+  right: 5px;
+}
+
+.sd-animal {
+  position: absolute;
+  border-radius: 999px;
+}
+
+.sd-rabbit {
+  bottom: 40px;
+  left: 140px;
+  width: 45px;
+  height: 45px;
+  background: #ffe9cf;
+}
+
+.sd-squirrel {
+  bottom: 40px;
+  left: 260px;
+  width: 40px;
+  height: 36px;
+  background: #e19b5b;
+  border-radius: 999px 999px 50px 50px;
+}
+
+.sd-bird {
+  top: 80px;
+  right: 160px;
+  width: 28px;
+  height: 28px;
+  background: #ffe07c;
+  border-radius: 50%;
+}
+
+@keyframes rabbit_move {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.sd-rabbit {
+  animation: rabbit_move 4s infinite ease-in-out;
+}
+
+@keyframes squirrel_tail {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+.sd-squirrel::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 40px;
+  background: #e19b5b;
+  border-radius: 999px;
+  right: -14px;
+  top: -10px;
+  animation: squirrel_tail 3s infinite ease-in-out;
+}
+
+@keyframes bird_fly {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+.sd-bird {
+  animation: bird_fly 5s infinite ease-in-out;
+}
+
+.sd-bear-area {
+  position: relative;
+  height: 220px;
+}
+
+.sd-bear-hill {
+  position: absolute;
+  bottom: 20px;
+  left: 110px;
+  width: 220px;
+  height: 60px;
+  border-radius: 120px;
+  background: radial-gradient(circle at top, #8bcc7c, #4c7844 70%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.sd-bear-img {
+  position: absolute;
+  width: 170px;
+  left: 130px;
+  bottom: 70px;
+  transform-origin: center bottom;
+  animation: bear_idle 3s ease-in-out infinite;
+}
+
+@keyframes bear_idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.sd-bear-img.sd-bear-shock {
+  animation: bear_shock 0.3s ease-out;
+}
+
+@keyframes bear_shock {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sd-bear-speech {
+  display: flex;
+  padding-left: 40px;
+}
+
+.sd-bear-bubble {
+  max-width: 320px;
+  background: #fff7c8;
+  border: 2px solid #f1d07a;
+  padding: 10px 14px;
+  border-radius: 16px;
+  color: #5c4621;
+  font-size: 14px;
+  position: relative;
+}
+
+.sd-bear-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 40px;
+  border-width: 12px 10px 0 10px;
+  border-style: solid;
+  border-color: #fff7c8 transparent transparent transparent;
+}
+
+.sd-live-board {
+  background: #f9f0dd;
+  border: 2px solid #e2c49d;
+  border-radius: 18px;
+  padding: 12px 14px;
+}
+
+.sd-live-board h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  color: #5c3b1d;
+}
+
+.sd-live-text {
+  min-height: 120px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sd-status-line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  color: #3e4f44;
+}
+
+.sd-status-title {
+  font-weight: 600;
+}
+
+.sd-status-value {
+  background: #e8f7ea;
+  border: 1px solid #bcdabf;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.sd-status-value.conflict {
+  background: #ffe3e6;
+  border-color: #f0bbc1;
+  color: #a93c46;
+}
+
+.sd-tip-box {
+  background: #effaf0;
+  border: 1px solid #c3e3c4;
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.sd-tip-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #284c32;
+}
+
+.sd-tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #3b573f;
+}
+
+.sd-panel {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.sd-panel h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3d3324;
+}
+
+.wood-panel {
+  background: linear-gradient(180deg, #f7e2c4, #e4b881);
+  border: 2px solid #a56a32;
+}
+
+.log-panel {
+  background: #f6efe7;
+  border: 2px solid #c89b6a;
+}
+
+.sd-input-group {
+  margin-bottom: 12px;
+}
+
+.sd-input-group label {
+  font-size: 13px;
+  color: #4c4334;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.sd-text-input {
+  width: 100%;
+  padding: 8px 11px;
+  border-radius: 12px;
+  border: 1.3px solid #c79f70;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.sd-tag-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1.3px solid #c79f70;
+  border-radius: 12px;
+  box-sizing: border-box;
+  min-height: 42px;
+}
+
+.sd-tag-input {
+  flex: 1;
+  min-width: 150px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  padding: 4px 6px;
+  outline: none;
+}
+
+.sd-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background: #c4e6a7;
+  border: 1px solid #95c07b;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #233f1f;
+  gap: 4px;
+}
+
+.sd-tag-remove {
+  cursor: pointer;
+}
+
+.sd-btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sd-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 9px 0;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sd-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sd-btn-start {
+  background: #ffcf90;
+  color: #5f3814;
+}
+
+.sd-btn-stop {
+  background: #f7d7d9;
+  color: #70323c;
+}
+
+.sd-log-list {
+  min-height: 120px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e0c3a0;
+  border-radius: 14px;
+  padding: 10px;
+  font-size: 13px;
+  color: #3d372f;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.sd-mediation-card {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.sd-mediation-inner {
+  background: white;
+  width: min(90vw, 340px);
+  padding: 18px;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.sd-mediation-bear {
+  width: 110px;
+  margin-bottom: 10px;
+}
+
+.sd-btn-close {
+  background: #ffd188 !important;
+  padding: 9px 0;
+  border-radius: 12px;
+}
+
+.sd-warning {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #7a2e2e;
+}
+
+@media (max-width: 960px) {
+  .sd-layout {
+    flex-direction: column;
+  }
+  .sd-left,
+  .sd-right {
+    width: 100%;
+  }
+}

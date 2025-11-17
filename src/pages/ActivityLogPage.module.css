@@ -1,0 +1,103 @@
+.pageShell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.heroCard {
+  background: linear-gradient(135deg, #f0f7ff, #e5f5ec);
+  border-radius: 28px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 2px solid #d5e5ff;
+}
+
+.heroTitle {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #1f3144;
+}
+
+.heroText {
+  color: #405260;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.groupGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.groupCard {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 1.25rem;
+  border: 1px solid #e1e7ef;
+  box-shadow: 0 10px 30px rgba(31, 49, 68, 0.08);
+}
+
+.groupTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1c3d5c;
+  margin-bottom: 1rem;
+}
+
+.entryItem {
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  background: #f7faff;
+  border: 1px solid #dae6ff;
+  margin-bottom: 0.6rem;
+}
+
+.entryTitle {
+  font-weight: 700;
+  color: #1c2f49;
+  margin: 0 0 0.25rem;
+}
+
+.entryDetail {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4d5c6f;
+}
+
+.entryTime {
+  font-size: 0.8rem;
+  color: #7b8799;
+  margin-top: 0.4rem;
+}
+
+.emptyCard {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: #fffdf1;
+  border-radius: 22px;
+  border: 2px dashed #ffe096;
+  color: #8b6a35;
+  font-weight: 600;
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.ghostButton {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 0.6rem 1.25rem;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghostButton:hover {
+  border-color: #9ca3af;
+}

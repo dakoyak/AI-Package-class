@@ -38,6 +38,8 @@
 .creativityTile {
   overflow: hidden;
   position: relative;
+  background-size: cover;
+  background-position: center;
 }
 
 .creativityMain {

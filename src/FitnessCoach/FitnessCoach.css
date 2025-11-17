@@ -1,0 +1,201 @@
+/* FitnessCoach.css - Combined Styles */
+
+/* Lesson Start Screen */
+.lesson-start-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border-radius: 20px;
+  text-align: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.start-screen-content .start-screen-icon {
+  font-size: 6rem;
+  line-height: 1;
+  color: #f5a623;
+}
+
+.start-screen-content h1 {
+  font-size: 2.5rem;
+  margin: 20px 0 10px;
+  color: #333;
+}
+
+.start-screen-content p {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 500px;
+  margin-bottom: 40px;
+}
+
+.start-lesson-btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.start-lesson-btn.coach-btn {
+  background-color: #f5a623;
+  box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+}
+
+.start-lesson-btn:hover {
+  transform: translateY(-3px);
+}
+
+.start-lesson-btn.coach-btn:hover {
+  box-shadow: 0 6px 20px rgba(245, 166, 35, 0.5);
+}
+
+/* Exit Button */
+.exit-lesson-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  height: auto;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.exit-lesson-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+
+/* Main Lesson View */
+.coach-page-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #121212;
+  color: white;
+  overflow: hidden;
+  border-radius: 20px;
+  position: relative;
+}
+
+.coach-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 30px;
+  background: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+.coach-header h2 { 
+  margin: 0; 
+  font-size: 1.5rem; 
+}
+
+.coach-main-layout {
+  display: flex;
+  flex-grow: 1;
+  height: calc(100% - 70px);
+}
+
+.coach-video-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  position: relative;
+  background: #000;
+}
+
+.coach-video-wrapper video,
+.coach-video-wrapper .pose-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 20px;
+}
+
+.coach-video-wrapper .pose-canvas {
+  z-index: 10;
+  transform: translate(-50%, -50%) scaleX(-1); /* Mirror the canvas to match the video */
+}
+
+.coach-sidebar {
+  width: 350px;
+  background: #1e1e1e;
+  border-left: 1px solid #333;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  overflow-y: auto;
+}
+
+.sidebar-card {
+  background: #2a2a2a;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.sidebar-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #f5a623;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+}
+
+.score-display {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #f5a623;
+  text-align: center;
+}
+.score-display span {
+  font-size: 1.5rem;
+  margin-left: 5px;
+}
+
+.feedback-text {
+  font-size: 1.1rem;
+  color: #eee;
+  line-height: 1.6;
+}
+
+.pose-guide-placeholder {
+  width: 100%;
+  height: 150px;
+  background: #333;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
+  font-size: 1.2rem;
+  font-weight: bold;
+}

@@ -1,0 +1,138 @@
+.boardShell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.boardHero {
+  background: linear-gradient(135deg, #fff0f4, #f8f8ff);
+  border-radius: 28px;
+  padding: 2rem;
+  border: 2px solid #ffd6e6;
+  margin-bottom: 1.5rem;
+}
+
+.boardTitle {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #452c47;
+}
+
+.boardText {
+  margin: 0;
+  color: #503b52;
+  line-height: 1.6;
+}
+
+.formCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.5rem;
+  border: 1px solid #e5d8f2;
+  box-shadow: 0 10px 30px rgba(78, 34, 93, 0.08);
+  margin-bottom: 2rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.fieldLabel {
+  font-weight: 600;
+  color: #412444;
+}
+
+.selectField,
+.textArea,
+.textInput {
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid #d7c3ec;
+  font-size: 1rem;
+  background: #fbf8ff;
+  color: #2c1f32;
+}
+
+.textArea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.submitRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primaryButton {
+  background: #f97f8a;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.postCard {
+  background: #fffdf9;
+  border-radius: 20px;
+  padding: 1.25rem;
+  border: 1px solid #ffe3c2;
+}
+
+.postHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+  color: #66482e;
+}
+
+.postAuthor {
+  font-weight: 700;
+}
+
+.postTime {
+  font-size: 0.85rem;
+  color: #9a735b;
+}
+
+.postBody {
+  white-space: pre-wrap;
+  color: #4b3a2f;
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
+.postTag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: #fbe9b7;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: #5a4c28;
+}
+
+.emptyBoard {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  border-radius: 22px;
+  border: 2px dashed #ffd6b3;
+  color: #6f5136;
+  font-weight: 600;
+}
