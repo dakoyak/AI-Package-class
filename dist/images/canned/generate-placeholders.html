@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Placeholder Images</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        button {
+            background: #87CEEB;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #6BB6D9;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Canned Bias Image Placeholder Generator</h1>
+        <p>This tool generates placeholder SVG images for the AI Detective HQ application.</p>
+        <p>Click the button below to generate all placeholder images.</p>
+        
+        <button onclick="generateAllPlaceholders()">Generate All Placeholders</button>
+        
+        <div class="status" id="status">
+            Ready to generate placeholders...
+        </div>
+    </div>
+
+    <script>
+        const cases = [
+            { prefix: 'doctor', label: '의사', icon: '🩺', color: '#87CEEB' },
+            { prefix: 'nurse', label: '간호사', icon: '💉', color: '#FFB6C1' },
+            { prefix: 'ceo', label: 'CEO', icon: '💼', color: '#FFD700' },
+            { prefix: 'family', label: '가족', icon: '👨‍👩‍👧‍👦', color: '#90EE90' },
+            { prefix: 'beauty', label: '아름다움', icon: '✨', color: '#DDA0DD' },
+            { prefix: 'cooking', label: '요리', icon: '🍳', color: '#FFA07A' },
+            { prefix: 'engineer', label: '엔지니어', icon: '💻', color: '#87CEEB' },
+            { prefix: 'teacher', label: '선생님', icon: '📚', color: '#98FB98' }
+        ];
+
+        function createSVG(label, icon, color, number) {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <rect width="512" height="512" fill="${color}"/>
+    <text x="256" y="200" font-size="120" text-anchor="middle" fill="white">${icon}</text>
+    <text x="256" y="280" font-size="32" text-anchor="middle" fill="white" font-family="Arial">${label}</text>
+    <text x="256" y="320" font-size="24" text-anchor="middle" fill="white" font-family="Arial">Placeholder ${number}</text>
+    <text x="256" y="450" font-size="16" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-family="Arial">Replace with AI-generated image</text>
+</svg>`;
+        }
+
+        function downloadSVG(filename, svgContent) {
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        async function generateAllPlaceholders() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<strong>Generating placeholders...</strong><br>';
+            
+            let count = 0;
+            for (const caseData of cases) {
+                for (let i = 1; i <= 6; i++) {
+                    const filename = `${caseData.prefix}_${i}.svg`;
+                    const svg = createSVG(caseData.label, caseData.icon, caseData.color, i);
+                    
+                    // Add small delay to prevent browser from blocking downloads
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    downloadSVG(filename, svg);
+                    count++;
+                    statusDiv.innerHTML += `Generated: ${filename}<br>`;
+                }
+            }
+            
+            statusDiv.innerHTML += `<br><strong>✅ Complete! Generated ${count} placeholder images.</strong><br>`;
+            statusDiv.innerHTML += `<br><em>Note: Save all downloaded SVG files to the frontend/public/images/canned/ directory.</em><br>`;
+            statusDiv.innerHTML += `<em>Then convert them to JPG format or replace with actual AI-generated images.</em>`;
+        }
+    </script>
+</body>
+</html>

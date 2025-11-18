@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#87CEEB"/>
+  <text x="256" y="200" font-size="120" text-anchor="middle" fill="white">🩺</text>
+  <text x="256" y="280" font-size="32" text-anchor="middle" fill="white" font-family="Arial, sans-serif">의사</text>
+  <text x="256" y="320" font-size="24" text-anchor="middle" fill="white" font-family="Arial, sans-serif">Placeholder 1</text>
+  <text x="256" y="450" font-size="16" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-family="Arial, sans-serif">Replace with AI-generated image</text>
+</svg>
