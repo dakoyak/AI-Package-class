@@ -103,7 +103,7 @@ If you are developing a production application, we recommend using TypeScript wi
 2. `.env.example`을 복사해 `.env`를 만들고 아래 값을 채웁니다.
    ```ini
    VITE_GEMINI_API_KEY=your_google_generative_ai_key
-   VITE_GEMINI_TEXT_MODEL=gemini-1.5-flash
+   VITE_GEMINI_TEXT_MODEL=gemini2.5-flash
    VITE_GEMINI_IMAGE_MODEL=gemini-1.5-flash
    VITE_API_URL=http://localhost:5001
    ```
@@ -121,6 +121,7 @@ If you are developing a production application, we recommend using TypeScript wi
 2. `.env` 파일을 만들고 필수 값을 설정합니다.
    ```ini
    OPENAI_API_KEY=sk-...
+   GEMINI_API_KEY=your_google_generative_ai_key  # 세종대왕 인터뷰 기능
    PORT=5001
    FRONTEND_URL=http://localhost:5173
    ```
@@ -129,6 +130,7 @@ If you are developing a production application, we recommend using TypeScript wi
    npm run dev  # nodemon
    ```
 4. 헬스체크로 서버를 확인합니다: `http://localhost:5001/health`
+5. SQLite 데이터베이스(`database.db`)는 서버 실행 시 자동 생성/마이그레이션됩니다.
 
 ## 🔗 라우팅 요약 (`src/routes/paths.ts`)
 
@@ -185,9 +187,11 @@ ai-detective-hq/
 │   └── vite.config.ts                 # Vite 빌드 설정
 │
 ├── backend/                           # 백엔드 (Node.js + Express)
+│   ├── database/
+│   │   └── init.js                    # SQLite 초기화 및 더미 데이터
 │   ├── routes/
 │   │   └── challenge.js               # API 라우트 (guardrail 챌린지)
-│   ├── server.js                      # Express 서버 설정
+│   ├── server.js                      # 인증/세종/가드레일 서버
 │   ├── package.json                   # 의존성 관리
 │   └── .env.example                   # 환경 변수 템플릿
 │
@@ -214,11 +218,15 @@ ai-detective-hq/
 | Node.js | 18+ | 런타임 환경 |
 | Express | 5.1.0 | 웹 프레임워크 |
 | Axios | 1.13.2 | OpenAI API 호출 |
+| SQLite3 | 5.1.x | 로컬 사용자 DB |
+| bcryptjs | 3.0.3 | 비밀번호 해시 |
+| @google/generative-ai | 0.24.1 | 세종 인터뷰(Gemini) |
 | CORS | 2.8.5 | CORS 미들웨어 |
 | dotenv | 17.2.3 | 환경 변수 관리 |
 
 ### External APIs
 - **OpenAI DALL-E 3**: 이미지 생성 (미션 2)
+- **Google Gemini 1.5 Flash**: 세종대왕 페르소나 Q&A
 - **OpenAI GPT-4**: 텍스트 생성 (미션 2)
 
 ---
@@ -323,11 +331,12 @@ npm start
 ### Backend 핵심 파일
 
 #### `server.js`
-- Express 서버 설정
+- Express 서버 설정 (단일 백엔드)
 - CORS 설정 (개발/프로덕션 환경 분리)
-- API 키 검증
-- 헬스 체크 엔드포인트 (`/health`)
-- 에러 핸들링 미들웨어
+- OpenAI/Gemini API 키 검증 및 로깅
+- 로그인/회원가입/학생 정보/세종 Q&A 엔드포인트
+- `/api/challenge/guardrail` 라우트 장착
+- 헬스 체크 엔드포인트 (`/health`)와 공통 에러 핸들링
 
 #### `routes/challenge.js`
 - `POST /api/challenge/guardrail`: 안전장치 챌린지 실행
@@ -336,6 +345,11 @@ npm start
 - OpenAI API 호출 (DALL-E 3 / GPT-4)
 - 거절 감지 및 에러 처리
 - 타임아웃: DALL-E 60초, GPT 30초
+
+#### `database/init.js`
+- SQLite 연결 및 `students`, `teachers` 테이블 자동 생성
+- 테스트용 더미 계정(학생/교사) 자동 주입
+- bcrypt로 비밀번호 해시 저장
 
 ---
 

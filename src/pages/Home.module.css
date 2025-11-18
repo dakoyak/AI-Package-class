@@ -73,7 +73,9 @@
   pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .creativityTile:hover .creativityMenu,
@@ -95,8 +97,8 @@
   gap: 0.3rem;
   padding: 1rem 1.25rem;
   border-radius: 18px;
-  background: rgba(205, 192, 192, 0.95);
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
   text-decoration: none;
   box-shadow: 0 18px 35px rgba(15, 23, 42, 0.2);
   transition: transform 0.2s ease, background 0.2s ease;
@@ -105,16 +107,17 @@
 .creativityMenuLink:hover,
 .creativityMenuLink:focus-visible {
   transform: translateX(4px);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .creativityMenuLabel {
   font-weight: 700;
+  color: #fff;
 }
 
 .creativityMenuSummary {
   font-size: 0.9rem;
-  color: rgba(15, 23, 42, 0.75);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 @media (max-width: 960px) {

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import changImg from '../assets/chang.png';
 import aiLiteracyBg from '../assets/ai-literacy.png';
+import immersiveBg from '../assets/aa.png';
 import {
   CREATIVITY_BASE_PATH,
   creativityModules,
@@ -62,15 +63,19 @@ const collaborationModules: TileSubmenuItem[] = [
 
 const tileData: TileConfig[] = [
   {
-    title: '창의력',
+    title: ' ',
     img: changImg,
     path: CREATIVITY_BASE_PATH,
     submenu: creativityMenuItems,
   },
   {
-    title: '몰입형체험',
+    title: '.',
     color: '#f6b24c',
     submenu: immersiveModules,
+    backgroundImage: `url(${immersiveBg})`,
+    backgroundSize: '100% 100%',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
   },
   {
     title: '논리/협업',
@@ -78,7 +83,7 @@ const tileData: TileConfig[] = [
     submenu: collaborationModules,
   },
   {
-    title: 'AI리터러시',
+    title: ',',
     color: '#51dc5c',
     path: ROUTES.aiLiteracy.root,
     backgroundImage: `url(${aiLiteracyBg})`,
@@ -99,7 +104,14 @@ function Home() {
       <div className={styles.tileGrid}>
         {tileData.map((tile) => {
           if (hasSubmenu(tile)) {
-            const backgroundStyle: CSSProperties | undefined = tile.img
+            const backgroundStyle: CSSProperties | undefined = tile.backgroundImage
+              ? {
+                  backgroundImage: tile.backgroundImage,
+                  backgroundSize: tile.backgroundSize,
+                  backgroundPosition: tile.backgroundPosition,
+                  backgroundRepeat: tile.backgroundRepeat,
+                }
+              : tile.img
               ? { backgroundImage: `url(${tile.img})` }
               : tile.color
               ? { backgroundColor: tile.color }

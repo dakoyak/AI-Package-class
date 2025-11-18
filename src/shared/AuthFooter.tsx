@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import styles from './AuthFooter.module.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
+
 type StudentData = {
   student_number: string;
   name: string;
@@ -175,7 +177,7 @@ function AuthFooter() {
       return;
     }
     try {
-      const response = await postJson('http://localhost:3001/api/login', { username, password });
+      const response = await postJson(`${API_BASE_URL}/api/login`, { username, password });
       persistUser(response);
     } catch (error) {
       console.error('Login error:', error);
@@ -216,7 +218,7 @@ function AuthFooter() {
     }
 
     try {
-      const response = await postJson('http://localhost:3001/api/signup', payload);
+      const response = await postJson(`${API_BASE_URL}/api/signup`, payload);
       persistUser(response);
     } catch (error) {
       console.error('Signup error:', error);

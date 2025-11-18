@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import './HistoricalInterview.css';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
+
 type HistoricalInterviewProps = {
   onStartLesson: () => void;
   onEndLesson: () => void;
@@ -50,7 +52,7 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
     setMessages((prev) => [...prev, { id: Date.now(), sender: 'user', text: userQuestion }]);
 
     try {
-      const response = await fetch('http://localhost:3001/api/ask-sejong', {
+      const response = await fetch(`${API_BASE_URL}/api/ask-sejong`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userQuestion }),

@@ -51,32 +51,34 @@ function App() {
           <>
             <ActivityTracker />
             <Routes>
-              <Route path={ROUTES.home} element={<Home />} /> {/* Home is now the root page */}
+              <Route element={<RootLayout />}>
+                <Route path={ROUTES.home} element={<Home />} /> {/* Home is now the root page */}
 
-              {/* AI Literacy routes, nested under /ai-literacy */}
-              <Route path={ROUTES.aiLiteracy.root}>
-                <Route index element={<NewIntroPage />} />
-                <Route path="mission/:missionType" element={<MissionHub />} />
-                <Route path="challenge/:missionType/:challengeId" element={<NewLiveChallengePage />} />
-              </Route>
-
-              {/* Routes from router.jsx, nested under /creative-classroom */}
-              <Route path={ROUTE_BASE.creativeClassroom} element={<RootLayout />}>
-                {/* Home was here, but now it's the root */}
-                <Route path="creativity" element={<CreativityStudio />}>
-                  <Route index element={<CreativityLanding />} />
-                  <Route path="sparring" element={<SparringLab />} />
-                  <Route path="art" element={<ArtWorkshop />} />
-                  <Route path="writing" element={<WritingAtelier />} />
+                {/* AI Literacy routes, nested under /ai-literacy */}
+                <Route path={ROUTES.aiLiteracy.root}>
+                  <Route index element={<NewIntroPage />} />
+                  <Route path="mission/:missionType" element={<MissionHub />} />
+                  <Route path="challenge/:missionType/:challengeId" element={<NewLiveChallengePage />} />
                 </Route>
-              </Route>
 
-              {/* Immersive experience routes */}
-              <Route path={ROUTES.immersive.history} element={<HistoricalInterviewLesson />} />
-              <Route path={ROUTES.immersive.coach} element={<FitnessCoachLesson />} />
-              <Route path={ROUTES.collaboration.smartDiscussion} element={<SmartDiscussion />} />
-              <Route path={ROUTES.dashboard.activityLog} element={<ActivityLogPage />} />
-              <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
+                {/* Routes from router.jsx, nested under /creative-classroom */}
+                <Route path={ROUTE_BASE.creativeClassroom}>
+                  {/* Home was here, but now it's the root */}
+                  <Route path="creativity" element={<CreativityStudio />}>
+                    <Route index element={<CreativityLanding />} />
+                    <Route path="sparring" element={<SparringLab />} />
+                    <Route path="art" element={<ArtWorkshop />} />
+                    <Route path="writing" element={<WritingAtelier />} />
+                  </Route>
+                </Route>
+
+                {/* Immersive experience routes */}
+                <Route path={ROUTES.immersive.history} element={<HistoricalInterviewLesson />} />
+                <Route path={ROUTES.immersive.coach} element={<FitnessCoachLesson />} />
+                <Route path={ROUTES.collaboration.smartDiscussion} element={<SmartDiscussion />} />
+                <Route path={ROUTES.dashboard.activityLog} element={<ActivityLogPage />} />
+                <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
+              </Route>
             </Routes>
             <AuthFooter />
           </>
