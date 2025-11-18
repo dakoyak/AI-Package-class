@@ -52,16 +52,16 @@
   box-shadow: 0 6px 20px rgba(74, 144, 226, 0.5);
 }
 
-/* Exit Button */
-.exit-lesson-btn {
+.historical-interview-page .exit-lesson-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 25px;
+  left: 30px;
+  right: auto;
   background: rgba(0, 0, 0, 0.3);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 8px 15px;
+  padding: 8px 10px;
   height: auto;
   font-size: 1rem;
   font-weight: bold;
@@ -74,10 +74,9 @@
   white-space: nowrap;
 }
 
-.exit-lesson-btn:hover {
+.historical-interview-page .exit-lesson-btn:hover {
   background: rgba(0, 0, 0, 0.5);
 }
-
 
 /* Main Lesson View */
 .interview-page-container {
@@ -89,7 +88,7 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  padding: 30px;
+  padding: 70px 30px 30px 30px; /* Increased top padding */
   box-sizing: border-box;
   position: relative;
 }
@@ -101,8 +100,8 @@
 }
 
 .character-image-wrapper {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: inline-flex;
@@ -115,7 +114,7 @@
 
 .character-name {
   margin-top: 15px;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: bold;
   color: white;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
@@ -143,7 +142,7 @@
 
 .message-bubble {
   display: flex;
-  max-width: 60%;
+  max-width: 70%;
   align-items: center;
 }
 
@@ -167,12 +166,10 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Style for real-time transcript */
 .message-text.transcript {
   background-color: rgba(59, 130, 246, 0.7) !important;
   color: rgba(255, 255, 255, 0.9);
 }
-
 
 .message-bubble.ai {
   align-self: flex-start;
@@ -202,12 +199,52 @@
   border-bottom-right-radius: 5px;
 }
 
+/* Input Area */
 .interview-input-area {
   display: flex;
-  justify-content: center;
+  gap: 10px;
   align-items: center;
   padding: 10px;
   background: transparent;
+}
+
+.chat-input {
+  flex-grow: 1;
+  height: 50px;
+  border-radius: 25px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0 20px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.chat-input:focus {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.send-btn {
+  height: 50px;
+  padding: 0 25px;
+  border-radius: 25px;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.send-btn:hover {
+  background-color: #2563eb;
+}
+
+.send-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
 }
 
 .mic-btn {
@@ -215,16 +252,16 @@
   background: #ffffff;
   color: #3b82f6;
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  font-size: 2.5rem;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  flex-shrink: 0;
 }
 
 .mic-btn:hover {
@@ -237,12 +274,6 @@
   animation: pulse 1.5s infinite;
 }
 
-.mic-btn span {
-  font-size: 0.8rem;
-  margin-top: 5px;
-  font-weight: bold;
-}
-
 .mic-btn:disabled {
   cursor: not-allowed;
   background-color: #e5e7eb;
@@ -251,7 +282,7 @@
 
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
   100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
@@ -270,7 +301,6 @@
   100% { opacity: .2; }
 }
 
-/* Styles for character images */
 .character-image-wrapper img,
 .message-avatar img {
   width: 100%;

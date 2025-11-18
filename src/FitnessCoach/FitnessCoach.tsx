@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   PoseLandmarker,
   FilesetResolver,
@@ -35,13 +36,22 @@ const setupMediaPipe = async () => {
 };
 
 function FitnessCoach({ onStartLesson, onEndLesson }: FitnessCoachProps) {
-  const [isStarted, setIsStarted] = useState(false);
+  const navigate = useNavigate();
+  const [isStarted, setIsStarted] = useState(true);
   const [webcamRunning, setWebcamRunning] = useState(false);
   const [feedback, setFeedback] = useState('자세를 준비해주세요!');
   const [score, setScore] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    onStartLesson();
+    return () => {
+      disableCam();
+      onEndLesson();
+    };
+  }, [onStartLesson, onEndLesson]);
 
   useEffect(() => {
     if (isStarted) {
@@ -138,31 +148,12 @@ function FitnessCoach({ onStartLesson, onEndLesson }: FitnessCoachProps) {
     }
   };
 
-  const handleStart = () => {
-    onStartLesson();
-    setIsStarted(true);
-  };
-
   const handleEnd = () => {
     disableCam();
     onEndLesson();
     setIsStarted(false);
+    navigate(-1);
   };
-
-  if (!isStarted) {
-    return (
-      <div className="lesson-start-screen">
-        <div className="start-screen-content">
-          <div className="start-screen-icon">🤸</div>
-          <h1>AI 댄스 챌린지</h1>
-          <p>AI 코치의 동작을 따라하고 실시간으로 점수 피드백을 받아보세요!</p>
-          <button className="start-lesson-btn coach-btn" onClick={handleStart}>
-            도전하기
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="coach-page-container">

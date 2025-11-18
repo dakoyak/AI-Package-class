@@ -1,6 +1,6 @@
 .sd-module.sd-forest {
-  width: 100vw;
-  min-height: 100vh;
+  width: 100%
+  min-height: 100%
   padding: 20px 30px;
   box-sizing: border-box;
   background: radial-gradient(circle at top, #fcf6e3 0%, #d4eacb 40%, #8ab78b 100%);

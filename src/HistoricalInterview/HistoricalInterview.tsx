@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, KeyboardEvent } from 'react';
 import './HistoricalInterview.css';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
 
 type HistoricalInterviewProps = {
   onStartLesson: () => void;
@@ -20,9 +18,9 @@ type SejongResponse = {
 };
 
 function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterviewProps) {
-  const [isStarted, setIsStarted] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const chatLogEndRef = useRef<HTMLDivElement | null>(null);
 
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
@@ -48,11 +46,14 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
   };
 
   const getSejongResponse = async (userQuestion: string) => {
+    if (!userQuestion.trim()) return;
+
     setIsAiThinking(true);
     setMessages((prev) => [...prev, { id: Date.now(), sender: 'user', text: userQuestion }]);
+    setInputValue('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/ask-sejong`, {
+      const response = await fetch('http://localhost:3001/api/ask-sejong', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userQuestion }),
@@ -74,6 +75,16 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
     SpeechRecognition.startListening({ continuous: false, language: 'ko-KR' });
   };
 
+  const handleSendMessage = () => {
+    getSejongResponse(inputValue);
+  };
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isAiThinking) {
+      handleSendMessage();
+    }
+  };
+
   useEffect(() => {
     if (!listening && transcript) {
       getSejongResponse(transcript);
@@ -85,19 +96,17 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
     chatLogEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleStart = () => {
+  useEffect(() => {
     onStartLesson();
-    setIsStarted(true);
     const initialMessage = '내가 세종대왕이다. 짐에게 무엇이 궁금한가?';
     setMessages([{ id: 1, sender: 'ai', text: initialMessage }]);
     setTimeout(() => speakText(initialMessage), 500);
-  };
+  }, [onStartLesson]);
 
   const handleEnd = () => {
     window.speechSynthesis.cancel();
     SpeechRecognition.abortListening();
     onEndLesson();
-    setIsStarted(false);
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -111,23 +120,8 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
     );
   }
 
-  if (!isStarted) {
-    return (
-      <div className="lesson-start-screen">
-        <div className="start-screen-content">
-          <div className="start-screen-icon">👑</div>
-          <h1>AI 역사 인터뷰</h1>
-          <p>AI 세종대왕과 실시간으로 대화하며 역사를 배워보세요.</p>
-          <button className="start-lesson-btn" onClick={handleStart}>
-            수업 시작하기
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="interview-page-container">
+    <div className="interview-page-container historical-interview-page">
       <button className="exit-lesson-btn" onClick={handleEnd}>
         &times; 메뉴로 돌아가기
       </button>
@@ -167,9 +161,20 @@ function HistoricalInterview({ onStartLesson, onEndLesson }: HistoricalInterview
         <div ref={chatLogEndRef} />
       </div>
       <footer className="interview-input-area">
+        <input
+          type="text"
+          className="chat-input"
+          placeholder="세종대왕에게 질문을 입력하세요..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isAiThinking}
+        />
+        <button className="send-btn" onClick={handleSendMessage} disabled={isAiThinking || !inputValue.trim()}>
+          전송
+        </button>
         <button className={`mic-btn ${listening ? 'listening' : ''}`} onClick={handleStartListening} disabled={isAiThinking}>
           🎤
-          <span>{listening ? '듣는 중...' : '눌러서 질문하기'}</span>
         </button>
       </footer>
     </div>
