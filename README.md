@@ -10,7 +10,10 @@ AI Creative Classroom은 초등학생들을 위한 AI 기반 창의 융합 교�
 - **💪 AI 피트니스 코치:** MediaPipe 자세 감지 기술을 활용하여 사용자의 자세를 분석하고 운동을 코칭합니다.
 - **🎨 창의력 스튜디오:** 글쓰기, 그림 그리기, 아이디어 구상 등 다양한 창작 활동을 AI와 함께 수행합니다.
 - **🤔 스마트 토론 및 관점 전환기:** 친구들과 토론하고, AI의 도움을 받아 다른 사람의 관점을 이해하는 연습을 합니다.
-- **🚀 AI 리터러시 챌린지:** 다양한 미션을 통해 AI의 원리를 배우고 윤리적 문제에 대해 고민합니다.
+- **🚀 AI 리터러시 챌린지:** 
+  - **미션 1: 편견 찾기** - AI가 생성한 이미지에서 편견을 발견하고 학습합니다.
+  - **미션 2: 안전장치 확인** - AI의 안전 메커니즘을 테스트하며 윤리적 AI에 대해 배웁니다.
+  - 대화 탐색 기능과 전체화면 모드로 몰입감 있는 학습 경험을 제공합니다.
 - **📊 학습 활동 대시보드:** 학생과 교사는 학습 진행 상황과 활동 기록을 한눈에 확인할 수 있습니다.
 
 ## 🛠️ 기술 스택
@@ -29,7 +32,7 @@ AI Creative Classroom은 초등학생들을 위한 AI 기반 창의 융합 교�
 - **Framework:** Node.js, Express
 - **Language:** JavaScript (CommonJS)
 - **Database:** SQLite
-- **AI:** `@google/generative-ai`
+- **AI:** `@google/generative-ai`, `openai` (for guardrail challenges)
 - **Authentication:** `bcryptjs` for password hashing
 
 ## 📂 프로젝트 구조
@@ -46,9 +49,14 @@ ai-creative-classroom/
 │   ├── components/       # 재사용 가능한 UI 컴포넌트
 │   ├── core/             # 핵심 로직 (API 클라이언트, canned data 등)
 │   ├── features/         # 주요 기능별 모듈
+│   │   ├── ai-literacy/  # AI 리터러시 수업 모듈
+│   │   │   ├── pages/    # 리터러시 페이지 (Intro, MissionHub, LiveChallenge)
+│   │   │   ├── data/     # 편견 데이터 및 안전장치 케이스
+│   │   │   └── AiLiteracyFullscreenContext.tsx # 전체화면 상태 관리
 │   ├── pages/            # 페이지 컴포넌트
 │   ├── layouts/          # 레이아웃 컴포넌트
 │   ├── services/         # Gemini 등 외부 서비스 연동
+│   ├── shared/           # 공유 컴포넌트 (ToggleFullscreenButton 등)
 │   └── styles/           # 전역 스타일 및 테마
 ├── index.html            # 메인 HTML 파일
 ├── package.json          # 프론트엔드 의존성 및 스크립트

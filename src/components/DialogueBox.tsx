@@ -6,6 +6,8 @@ interface DialogueBoxProps {
   text: string;
   onNext?: () => void;
   showNext?: boolean;
+  onPrev?: () => void;
+  showPrev?: boolean;
 }
 
 const fadeIn = keyframes`
@@ -94,17 +96,45 @@ const DialogueText = styled.p`
   }
 `;
 
-const NextIndicator = styled.div`
-  position: absolute;
-  bottom: 20px;
-  right: 30px;
-  animation: ${bounce} 1s ease-in-out infinite;
-  font-size: 32px;
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: ${({ theme }) => theme.spacing.md};
+  padding: 0 ${({ theme }) => theme.spacing.sm};
+  position: relative;
+  z-index: 10;
+`;
+
+const StyledNavButton = styled.button<{ $type: 'prev' | 'next' }>`
+  background: ${({ $type }) => $type === 'prev' ? '#95a5a6' : '#FFD700'};
+  color: ${({ $type }) => $type === 'prev' ? 'white' : '#2c3e50'};
+  font-size: ${({ theme }) => theme.fonts.sizes.medium};
+  font-weight: 800;
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
+  border-radius: 30px;
+  border: 3px solid #2c3e50;
+  box-shadow: 0 4px 0 #2c3e50, 0 5px 10px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  user-select: none;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  visibility: ${({ disabled }) => disabled ? 'hidden' : 'visible'};
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #2c3e50, 0 8px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #2c3e50, 0 3px 6px rgba(0, 0, 0, 0.2);
+  }
   
   @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
-    font-size: 48px;
+    font-size: ${({ theme }) => theme.fonts.sizes.large};
+    padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
   }
 `;
 
@@ -122,7 +152,9 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
   character,
   text,
   onNext,
-  showNext = true
+  showNext = true,
+  onPrev,
+  showPrev = false
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
@@ -157,18 +189,47 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
     }
   };
 
+  const handlePrevClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onPrev) onPrev();
+  };
+
+  const handleNextClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onNext) onNext();
+  };
+
   return (
     <Container>
-      <DialogueWindow>
+      <DialogueWindow onClick={handleClick}>
         <CharacterName $character={character}>
           {characterName}
         </CharacterName>
         <DialogueText>{displayedText}</DialogueText>
-        {isComplete && showNext && (
-          <NextIndicator>▼</NextIndicator>
-        )}
         <ClickOverlay onClick={handleClick} />
       </DialogueWindow>
+      
+      {(showPrev || showNext) && isComplete && (
+        <ButtonGroup>
+          <StyledNavButton 
+            $type="prev" 
+            onClick={handlePrevClick}
+            disabled={!showPrev}
+            style={{ visibility: showPrev ? 'visible' : 'hidden' }}
+          >
+            ◀ 이전
+          </StyledNavButton>
+          
+          <StyledNavButton 
+            $type="next" 
+            onClick={handleNextClick}
+            disabled={!showNext}
+            style={{ visibility: showNext ? 'visible' : 'hidden' }}
+          >
+            다음 ▶
+          </StyledNavButton>
+        </ButtonGroup>
+      )}
     </Container>
   );
 };
