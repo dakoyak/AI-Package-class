@@ -1,201 +1,370 @@
-/* FitnessCoach.css - Combined Styles */
+/* FitnessCoach.css - Debug & Fix Mode */
 
-/* Lesson Start Screen */
-.lesson-start-screen {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: #fff;
-  border-radius: 20px;
-  text-align: center;
-  padding: 40px;
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Fredoka:wght@300;400;600&display=swap');
 
-.start-screen-content .start-screen-icon {
-  font-size: 6rem;
-  line-height: 1;
-  color: #f5a623;
-}
-
-.start-screen-content h1 {
-  font-size: 2.5rem;
-  margin: 20px 0 10px;
-  color: #333;
-}
-
-.start-screen-content p {
-  font-size: 1.2rem;
-  color: #666;
-  max-width: 500px;
-  margin-bottom: 40px;
-}
-
-.start-lesson-btn {
-  padding: 15px 40px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.start-lesson-btn.coach-btn {
-  background-color: #f5a623;
-  box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
-}
-
-.start-lesson-btn:hover {
-  transform: translateY(-3px);
-}
-
-.start-lesson-btn.coach-btn:hover {
-  box-shadow: 0 6px 20px rgba(245, 166, 35, 0.5);
-}
-
-/* Exit Button */
-.exit-lesson-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 15px;
-  height: auto;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  transition: background-color 0.2s;
-  white-space: nowrap;
-}
-
-.exit-lesson-btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-
-/* Main Lesson View */
 .coach-page-container {
   width: 100%;
-  height: 100%;
+  height: 100vh; /* 전체 화면 높이 */
+  margin: 0; /* 여백 제거 */
+  background-color: #1a0b2e; 
+  position: fixed; /* 스크롤 방지 */
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  font-family: 'Fredoka', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+/* Loading State */
+.loading-container {
   display: flex;
   flex-direction: column;
-  background-color: #121212;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 100%);
+  color: #00ffff;
+  z-index: 20;
+  gap: 20px;
+}
+
+.loading-spinner-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid transparent;
+  border-top: 6px solid #ff00cc;
+  border-right: 6px solid #00ffff;
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.loading-pulse {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 3px solid #ff00cc;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+.loading-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 0 0 20px #ff00cc, 0 0 40px #ff00cc;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.loading-message {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.2rem;
+  color: #00ffff;
+  margin: 0;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.3;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Error States */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 100%);
+  z-index: 20;
+  gap: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.error-camera {
+  background: linear-gradient(135deg, #1a0b2e 0%, #3d1b1e 100%);
+}
+
+.error-model {
+  background: linear-gradient(135deg, #1a0b2e 0%, #3d2b1e 100%);
+}
+
+.error-permission {
+  background: linear-gradient(135deg, #1a0b2e 0%, #2d1b3e 100%);
+}
+
+.error-icon {
+  font-size: 5rem;
+  animation: errorBounce 2s ease-in-out infinite;
+}
+
+.error-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 2.5rem;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+.error-message {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.3rem;
+  color: #ffcccc;
+  margin: 0;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.error-retry-button {
+  background: linear-gradient(90deg, #ff00cc, #333399);
   color: white;
-  overflow: hidden;
-  border-radius: 20px;
-  position: relative;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 40px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(255, 0, 204, 0.4);
+  margin-top: 20px;
 }
 
-.coach-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px 30px;
-  background: #1e1e1e;
-  border-bottom: 1px solid #333;
+.error-retry-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(255, 0, 204, 0.6);
 }
 
-.coach-header h2 { 
-  margin: 0; 
-  font-size: 1.5rem; 
+.error-retry-button:active {
+  transform: scale(0.98);
 }
 
-.coach-main-layout {
-  display: flex;
-  flex-grow: 1;
-  height: calc(100% - 70px);
+@keyframes errorBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.coach-video-wrapper {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 30px;
-  position: relative;
+/* 1. Video Layer - 세로 비율로 가운데 배치 */
+.video-fullscreen-wrapper {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 60%; /* 화면의 60% 너비 */
+  height: 100%;
+  z-index: 1;
   background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.coach-video-wrapper video,
-.coach-video-wrapper .pose-canvas {
+.video-fullscreen-wrapper video {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain; /* 비율 유지하면서 전체 표시 */
+  transform: scaleX(-1); /* 거울 모드 유지 */
+  display: block;
+}
+
+.video-fullscreen-wrapper .pose-canvas-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(-1);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 2. UI Overlay Layer */
+.coach-ui-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  transform: scaleX(-1); /* Mirror the content */
-  border-radius: 20px;
-  object-fit: cover; /* Fill the container, potentially cropping */
-}
-
-.coach-video-wrapper .pose-canvas {
   z-index: 10;
-}
-
-.coach-sidebar {
-  width: 350px;
-  background: #1e1e1e;
-  border-left: 1px solid #333;
-  padding: 30px;
+  pointer-events: none;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  overflow-y: auto;
+  justify-content: space-between;
+  padding: 40px; /* 패딩을 늘려서 글씨 잘림 방지 */
+  box-sizing: border-box;
 }
 
-.sidebar-card {
-  background: #2a2a2a;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-.sidebar-card h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #f5a623;
-  font-size: 1.1rem;
-  border-bottom: 1px solid #444;
-  padding-bottom: 10px;
+/* Header: Title only (exit button removed) */
+.overlay-header {
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: flex-start;
+  padding-top: 20px;
 }
 
-.score-display {
-  font-size: 4rem;
-  font-weight: 700;
-  color: #f5a623;
-  text-align: center;
-}
-.score-display span {
+.title-badge {
+  background: linear-gradient(90deg, #ff00cc, #333399);
+  color: white;
+  padding: 10px 30px;
+  border-radius: 20px;
+  font-family: 'Anton', sans-serif;
   font-size: 1.5rem;
-  margin-left: 5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  box-shadow: 0 5px 15px rgba(255, 0, 204, 0.5);
 }
 
-.feedback-text {
-  font-size: 1.1rem;
-  color: #eee;
-  line-height: 1.6;
-}
-
-.pose-guide-placeholder {
-  width: 100%;
-  height: 150px;
-  background: #333;
-  border-radius: 10px;
+/* Center: Feedback */
+.overlay-center {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #777;
-  font-size: 1.2rem;
+  flex: 1;
+}
+
+.feedback-banner {
+  text-align: center;
+}
+
+.feedback-banner h2 {
+  font-family: 'Anton', sans-serif;
+  font-size: 4.5rem; /* Increased from 3.5rem for better readability */
+  margin: 0;
+  color: #fff;
+  text-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(0, 0, 0, 0.7); /* Enhanced shadow for better contrast */
+  animation: feedbackFadeIn 0.3s ease-in; /* Subtle fade-in animation */
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Color coding for different feedback levels */
+.feedback-banner h2.feedback-perfect {
+  color: #00ff00; /* Green for perfect */
+  text-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 255, 0, 0.6),
+    0 0 40px rgba(0, 255, 0, 0.4);
+}
+
+.feedback-banner h2.feedback-good {
+  color: #ffff00; /* Yellow for good */
+  text-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 255, 0, 0.6),
+    0 0 40px rgba(255, 255, 0, 0.4);
+}
+
+.feedback-banner h2.feedback-needs-improvement {
+  color: #ffffff; /* White for needs improvement */
+  text-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 255, 255, 0.4),
+    0 0 40px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes feedbackFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.overlay-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 20px;
+}
+
+/* Left: Score */
+.score-badge {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #00ffff;
+  border-radius: 20px;
+  padding: 15px 25px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+
+.score-badge .label {
+  font-size: 0.9rem;
+  color: #00ffff;
+  display: block;
   font-weight: bold;
+}
+
+.score-badge .value {
+  font-family: 'Anton', sans-serif;
+  font-size: 3rem;
+  color: white;
+}
+
+/* Right: Guide */
+.guide-box {
+  background: white;
+  padding: 10px;
+  border-radius: 15px;
+  border: 4px solid #ff00cc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guide-box img {
+  width: 100px;
+  height: auto;
+}
+
+.guide-box span {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  color: #ff00cc;
 }
