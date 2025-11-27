@@ -1,156 +1,254 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-type SparringPayload = {
-  classicStory?: string;
-  twist?: string;
-  focus?: string;
-};
+// Initialize the client
+// The API key is injected from import.meta.env.VITE_GEMINI_API_KEY automatically.
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
 
-type WritingPayload = {
-  theme?: string;
-  genre?: string;
-  grade?: string;
-};
-
-type ArtStylePayload = {
+export interface ArtStyleRequest {
   imageBase64: string;
   mimeType: string;
   styleLabel: string;
   stylePrompt: string;
-  description: string;
-};
-
-export type ArtStyleResult = {
-  mimeType?: string;
-  dataUrl?: string;
-  fileUri?: string;
-  imageUrl?: string;
-  resultUrl?: string;
-  message?: string;
-};
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
-if (!API_KEY) {
-  throw new Error('VITE_GEMINI_API_KEY 환경 변수가 설정되어 있지 않습니다.');
 }
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+export interface ArtStyleResult {
+  dataUrl?: string;
+  message?: string;
+}
 
-const TEXT_MODEL = import.meta.env.VITE_GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
-const IMAGE_MODEL = import.meta.env.VITE_GEMINI_IMAGE_MODEL || 'gemini-2.5-flash';
+export interface SparringScenarioRequest {
+  classicStory: string;
+  twist: string;
+  focus: string;
+}
 
-const textModel = genAI.getGenerativeModel({ model: TEXT_MODEL });
-const imageModel = genAI.getGenerativeModel({ model: IMAGE_MODEL });
+export interface WritingGuideRequest {
+  grade: string;
+  theme: string;
+  genre: string;
+}
 
-const buildSparringPrompt = ({ classicStory, twist, focus }: SparringPayload) => {
-  return [
-    '너는 초등학교 3~4학년 대상 AI 스파링 파트너이다.',
-    '학생은 고전 동화를 비판적으로 다시 쓰도록 지도받는다.',
-    '다음 형식을 반드시 지켜라.',
-    '',
-    `기준 동화: ${classicStory || '예)토끼와 거북이'}`,
-    `AI가 제시할 엉뚱한 반론: ${twist || '예)거북이가 이긴 것은 불공평하다'}`,
-    `수업 초점: ${focus || '예)불공정 상황을 발견하고 다시 구성하기'}`,
-    '',
-    '출력 템플릿:',
-    '1. AI 반론: 한 문단으로 학생을 도발하되 안전한 표현을 사용한다.',
-    '2. 비판적 사고 질문 2개: 질문은 번호 목록으로 만든다.',
-    '3. 재구성 가이드: 학생이 새 결말을 쓰도록 단계별 안내를 bullet 3개로 제시한다.',
-    '4. 확장 활동: STEAM 또는 창체 연계 아이디어를 한 줄로 제시한다.',
-  ].join('\n');
-};
+/**
+ * Requests an image generation task from the 'gemini-pro-vision' model.
+ * It takes an existing image, a style prompt, and a description to guide the generation.
+ */
+/**
+ * Requests an artistic SVG interpretation from the 'gemini-1.5-flash' model.
+ * It takes an existing image, a style prompt, and a description to guide the generation.
+ */
+export const requestArtStyleRender = async (
+  params: ArtStyleRequest
+): Promise<ArtStyleResult> => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("CRITICAL: VITE_GEMINI_API_KEY is missing or empty!");
+    throw new Error("API Key가 설정되지 않았습니다. .env 파일을 확인해주세요.");
+  }
 
-const buildWritingPrompt = ({ theme, genre, grade }: WritingPayload) => {
-  return [
-    '너는 초등 국어/창체 수업용 AI 글쓰기 코치이다.',
-    '학생 입력을 바탕으로 활동지를 대신 작성한다.',
-    `학년: ${grade || '3학년'}`,
-    `주제: ${theme || '거북이의 시점으로 쓰는 우정 이야기'}`,
-    `장르: ${genre || '동화'}`,
-    '',
-    '출력 템플릿:',
-    '1. 글쓰기 미션 제목',
-    '2. 아이스브레이킹 질문 2개 (번호 목록)',
-    '3. 글 구조 제안 (도입, 전개, 결말 형태)',
-    '4. 표현 꿀팁 2개',
-    '5. 확장 활동 아이디어 1개',
-  ].join('\n');
-};
+  const modelName = "gemini-2.5-flash-image";
 
-type InlineImagePart = {
-  inlineData: {
-    data: string;
-    mimeType: string;
-  };
-};
+  const maxRetries = 3;
+  let retryCount = 0;
 
-const extractInlineImage = (parts: InlineImagePart[]): ArtStyleResult | null => {
-  for (const part of parts) {
-    if (part.inlineData) {
-      const { mimeType, data } = part.inlineData;
-      return {
-        mimeType,
-        dataUrl: `data:${mimeType};base64,${data}`,
-      };
+  while (retryCount < maxRetries) {
+    try {
+      console.log(`[Fetch] Attempting image generation with model: ${modelName} (Attempt ${retryCount + 1}/${maxRetries})`);
+
+      // Construct a prompt that guides the model to modify the image style
+      // while respecting the original content description.
+      const finalPrompt = `
+        Instructions:
+        1. Analyze the attached image to understand its composition and subject matter.
+        2. Redraw this exact scene, maintaining the original composition.
+        3. Apply the following artistic style to the new image: "${params.stylePrompt}".
+        
+        The output must be a high-quality image that looks like a finished artwork in the requested style.
+      `.trim();
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: finalPrompt },
+                {
+                  inline_data: {
+                    mime_type: params.mimeType,
+                    data: params.imageBase64
+                  }
+                }
+              ]
+            }],
+            generationConfig: {
+              responseModalities: ["IMAGE"]
+            },
+            safetySettings: [
+              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+            ]
+          })
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After');
+          const waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : 2000 * Math.pow(2, retryCount);
+          console.warn(`[Fetch] Rate limited (429). Retrying in ${waitTime}ms...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          retryCount++;
+          continue;
+        }
+
+        const errText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errText}`);
+      }
+
+      const data = await response.json();
+
+      // Check for candidates
+      const candidates = data.candidates;
+      if (!candidates || candidates.length === 0) {
+        // Check promptFeedback for block reason
+        if (data.promptFeedback && data.promptFeedback.blockReason) {
+          throw new Error(`이미지 생성이 차단되었습니다. 사유: ${data.promptFeedback.blockReason}`);
+        }
+        throw new Error('Gemini 응답에 후보(candidates)가 없습니다.');
+      }
+
+      const firstCandidate = candidates[0];
+
+      // Check finishReason
+      if (firstCandidate.finishReason && firstCandidate.finishReason !== 'STOP') {
+        throw new Error(`이미지 생성이 완료되지 않았습니다. 사유: ${firstCandidate.finishReason}`);
+      }
+
+      // Extract the generated image
+      const parts = firstCandidate.content?.parts;
+      if (parts) {
+        for (const part of parts) {
+          // API response might use camelCase (inlineData) or snake_case (inline_data)
+          const inlineData = part.inlineData || part.inline_data;
+
+          if (inlineData && inlineData.data) {
+            const base64Image = inlineData.data;
+            const mimeType = inlineData.mimeType || inlineData.mime_type || 'image/png';
+            return {
+              dataUrl: `data:${mimeType};base64,${base64Image}`,
+              message: 'AI가 당신의 그림을 예술적으로 재해석했습니다.',
+            };
+          }
+          // If we get text instead of image, it's likely a refusal or explanation
+          if (part.text) {
+            console.warn('AI returned text instead of image:', part.text);
+            throw new Error(`AI가 이미지 생성을 거부했습니다: "${part.text}"`);
+          }
+        }
+      }
+
+      throw new Error('AI 응답에서 이미지 데이터를 찾을 수 없습니다. (텍스트 응답만 왔을 수 있습니다)');
+
+    } catch (error) {
+      if (retryCount === maxRetries - 1 || (error instanceof Error && !error.message.includes('429'))) {
+        console.warn(`[Fetch] Failed with model ${modelName}:`, error);
+
+        let userMessage = '스타일 변환 중 알 수 없는 오류가 발생했습니다.';
+        if (error instanceof Error) {
+          if (error.message.includes('429')) {
+            userMessage = '사용량 한도를 초과했습니다. 잠시 후 다시 시도해주세요.';
+          } else if (error.message.includes('400')) {
+            userMessage = '요청 형식이 잘못되었습니다. (지원되지 않는 모델일 수 있습니다)';
+          } else {
+            userMessage = `이미지 생성 실패: ${error.message}`;
+          }
+        }
+
+        throw new Error(userMessage);
+      }
+      // If it was a 429 and we haven't hit maxRetries, the loop continues
     }
   }
-  return null;
+  // If the loop finishes without returning, it means all retries failed.
+  throw new Error('이미지 생성에 실패했습니다. 여러 번 시도했지만 응답을 받지 못했습니다.');
 };
 
-export async function requestSparringScenario(payload: SparringPayload): Promise<string> {
-  const prompt = buildSparringPrompt(payload);
-  const result = await textModel.generateContent(prompt);
-  const response = await result.response;
-  return response.text();
-}
+/**
+ * Requests a creative sparring scenario from Gemini.
+ * Takes a classic story, a twist, and a focus area to generate
+ * a creative reinterpretation or discussion prompt.
+ */
+export const requestSparringScenario = async (
+  params: SparringScenarioRequest
+): Promise<string> => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-export async function requestWritingGuide(payload: WritingPayload): Promise<string> {
-  const prompt = buildWritingPrompt(payload);
-  const result = await textModel.generateContent(prompt);
-  const response = await result.response;
-  return response.text();
-}
+    const prompt = `
+      당신은 창의적 사고를 돕는 교육 AI입니다.
+      
+      기준 동화: "${params.classicStory}"
+      엉뚱한 반론: "${params.twist}"
+      수업 초점: "${params.focus}"
+      
+      위 정보를 바탕으로 학생들이 비판적 사고와 창의력을 발휘할 수 있도록 
+      흥미진진한 토론 시나리오와 가이드 질문을 작성해주세요.
+      
+      출력 형식:
+      1. 시나리오 개요
+      2. 주요 논쟁 포인트
+      3. 학생들에게 던질 질문 (3가지)
+      4. 예상되는 반론과 재반론
+    `;
 
-export async function requestImageFromText(prompt: string): Promise<ArtStyleResult> {
-  const result = await imageModel.generateContent(prompt);
-  const response = await result.response;
-
-  const candidates = response.candidates?.[0]?.content?.parts;
-  if (!candidates) {
-    throw new Error('Gemini가 이미지 결과를 반환하지 않았습니다.');
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Sparring Scenario Error:", error);
+    throw new Error("스파링 시나리오 생성에 실패했습니다.");
   }
+};
 
-  const inlineImage = extractInlineImage(candidates as InlineImagePart[]);
-  if (!inlineImage) {
-    throw new Error('Gemini가 이미지 결과를 반환하지 않았습니다.');
+/**
+ * Requests a writing guide from Gemini.
+ * Takes grade, theme, and genre to generate a structured writing worksheet.
+ */
+export const requestWritingGuide = async (
+  params: WritingGuideRequest
+): Promise<string> => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `
+      당신은 초등학생 글쓰기 지도 전문가 AI입니다.
+      
+      대상 학년: ${params.grade}
+      글쓰기 장르: ${params.genre}
+      주제: "${params.theme}"
+      
+      위 정보를 바탕으로 초등학생이 글쓰기를 쉽게 시작하고 완성할 수 있도록 
+      단계별 가이드와 예시를 포함한 글쓰기 워크시트 내용을 작성해주세요.
+      
+      출력 형식:
+      1. 글쓰기 목표
+      2. 아이디어 구상하기 (질문 포함)
+      3. 개요 짜기 (예시 포함)
+      4. 글쓰기 시작하기 (팁 포함)
+      5. 퇴고하기 (체크리스트 포함)
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Writing Guide Error:", error);
+    throw new Error("글쓰기 가이드 생성에 실패했습니다.");
   }
-
-  return inlineImage;
-}
-
-export async function requestArtStyleRender(payload: ArtStylePayload): Promise<ArtStyleResult> {
-  const imagePart: InlineImagePart = {
-    inlineData: {
-      data: payload.imageBase64,
-      mimeType: payload.mimeType,
-    },
-  };
-
-  const prompt = `주어진 이미지를 '${payload.styleLabel}' 스타일로 다시 그려주세요. 이 그림은 '${payload.description}'을 묘사하고 있습니다. 스타일 프롬프트는 다음과 같습니다: '${payload.stylePrompt}'.`;
-
-  const result = await imageModel.generateContent([prompt, imagePart]);
-  const response = await result.response;
-
-  const candidates = response.candidates?.[0]?.content?.parts;
-  if (!candidates) {
-    throw new Error('Gemini가 이미지 결과를 반환하지 않았습니다.');
-  }
-
-  const inlineImage = extractInlineImage(candidates as InlineImagePart[]);
-  if (!inlineImage) {
-    throw new Error('Gemini가 이미지 결과를 반환하지 않았습니다.');
-  }
-
-  return inlineImage;
-}
+};

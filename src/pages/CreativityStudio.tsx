@@ -5,11 +5,7 @@ import styles from './CreativityStudio.module.css';
 function CreativityStudio() {
   return (
     <div className={styles.wrapper}>
-      <section className={styles.header}>
-        <div>
-          <h2 className={styles.title}>AI 상상 스파링 · 글쓰기 · 아트 워크숍</h2>
-        </div>
-      </section>
+
 
       <div className={styles.moduleNav}>
         {creativityModules.map((module) => (
