@@ -7,6 +7,7 @@ const fs = require("fs");
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const initializeDatabase = require("./database/init.cjs");
+const db = initializeDatabase();
 const { spawn } = require("child_process");
 
 const app = express();
