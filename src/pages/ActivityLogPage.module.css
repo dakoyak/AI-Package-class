@@ -5,11 +5,12 @@
 }
 
 .heroCard {
-  background: linear-gradient(135deg, #f0f7ff, #e5f5ec);
+  background: rgba(240, 247, 255, 0.95);
   border-radius: 28px;
   padding: 2rem;
   margin-bottom: 2rem;
   border: 2px solid #d5e5ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .heroTitle {
@@ -32,11 +33,11 @@
 }
 
 .groupCard {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 22px;
   padding: 1.25rem;
   border: 1px solid #e1e7ef;
-  box-shadow: 0 10px 30px rgba(31, 49, 68, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .groupTitle {
@@ -75,11 +76,12 @@
 .emptyCard {
   text-align: center;
   padding: 3rem 1rem;
-  background: #fffdf1;
+  background: rgba(255, 253, 241, 0.95);
   border-radius: 22px;
   border: 2px dashed #ffe096;
   color: #8b6a35;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .actionsRow {
@@ -89,15 +91,18 @@
 }
 
 .ghostButton {
-  background: transparent;
-  border: 1px solid #d1d5db;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #d1d5db;
   border-radius: 14px;
   padding: 0.6rem 1.25rem;
   color: #374151;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .ghostButton:hover {
   border-color: #9ca3af;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

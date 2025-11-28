@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { useAiLiteracyFullscreen } from '../features/ai-literacy/AiLiteracyFullscreenContext';
+import chalkboardBg from '../assets/칠판백그.png';
 
 // define the styled component OUTSIDE the functional component
 const StyledGlobalStyle = createGlobalStyle<{ isModuleFullscreen: boolean }>`
@@ -18,40 +19,22 @@ const StyledGlobalStyle = createGlobalStyle<{ isModuleFullscreen: boolean }>`
   body {
     font-family: ${({ theme }) => theme.fonts.primary};
     font-size: ${({ theme }) => theme.fonts.sizes.small};
-    color: ${({ theme }) => theme.colors.text};
-    background: linear-gradient(135deg, ${({ theme }) => theme.colors.chalkboard.darkGreen} 0%, ${({ theme }) => theme.colors.chalkboard.green} 100%);
+    color: #f0f0f0;
+    background-image: url(${chalkboardBg});
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 24px solid ${({ theme }) => theme.colors.chalkboard.woodBorder};
-    box-shadow: 
-      inset 0 0 20px rgba(0, 0, 0, 0.3),
-      inset 0 4px 8px rgba(0, 0, 0, 0.2),
-      0 0 0 4px ${({ theme }) => theme.colors.chalkboard.woodDark};
-    pointer-events: none;
-    z-index: 9999;
-
-    ${({ isModuleFullscreen }) => isModuleFullscreen && `
-      border: none;
-      box-shadow: none;
-      display: none; /* 완전히 제거 */
-    `}
-  }
-
   #root {
     width: 100%;
     min-height: 100vh;
-    padding: 40px;
+    padding: 0;
   }
 
   h1 {
