@@ -1,25 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './SmartDiscussion.css';
 
-type Team = 'red' | 'blue';
-
-const TEAM_LABELS: Record<Team, string> = {
-  red: '레드팀',
-  blue: '블루팀',
-};
-
-const BEAR_FRAMES = {
-  idle: '/images/smart-discussion/bear_4.png',
-  idleAlt: '/images/smart-discussion/bear_1.png',
-  talk: '/images/smart-discussion/bear_3.png',
-  talkAlt: '/images/smart-discussion/bear_2.png',
-  conflict: '/images/smart-discussion/bear_3.png',
-  celebrate: '/images/smart-discussion/bear_5.png',
-  wink: '/images/smart-discussion/bear_6.png',
-};
-
-const CONFLICT_KEYWORDS = ['싫어', '그만', '못해', '잘못', '틀려', '왜 그래', '짜증', '싸우'];
-
 type SpeechRecognitionEventLike = {
   resultIndex: number;
   results: ArrayLike<{ 0: { transcript: string } }>;
@@ -36,11 +17,11 @@ type SpeechRecognitionLike = {
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
 };
 
-type DiscussionLog = {
+type Message = {
   id: number;
-  timestamp: string;
+  speaker: 'user' | 'bear';
   text: string;
-  team?: Team;
+  timestamp: string;
 };
 
 const formatTime = (date: Date) => {
@@ -50,144 +31,102 @@ const formatTime = (date: Date) => {
   return `${hh}:${mm}:${ss}`;
 };
 
+type DiscussionPoint = {
+  id: number;
+  text: string;
+  timestamp: string;
+};
+
 export const SmartDiscussion = () => {
-  const [currentTime, setCurrentTime] = useState(() => formatTime(new Date()));
-  const [participants, setParticipants] = useState<string[]>([]);
-  const [participantInput, setParticipantInput] = useState('');
-  const [location, setLocation] = useState('');
-  const [topic, setTopic] = useState('');
-  const [liveSpeech, setLiveSpeech] = useState('');
-  const [logs, setLogs] = useState<DiscussionLog[]>([]);
-  const [bearMessage, setBearMessage] = useState('오늘은 어떤 주제로 이야기해볼까?');
-  const [bearFrame, setBearFrame] = useState(BEAR_FRAMES.idle);
-  const [isBearShocked, setIsBearShocked] = useState(false);
-  const [isDiscussionActive, setIsDiscussionActive] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isListening, setIsListening] = useState(false);
+  const [isBearThinking, setIsBearThinking] = useState(false);
+  const [bearMessage, setBearMessage] = useState('안녕! 나는 곰곰이야. 오늘은 무엇에 대해 이야기해볼까?');
   const [speechSupported, setSpeechSupported] = useState(true);
-  const [conflictStatus, setConflictStatus] = useState('지금은 평화로운 숲이에요');
-  const [showMediation, setShowMediation] = useState(false);
-  const [mediationText, setMediationText] = useState('');
-  const [activeTeam, setActiveTeam] = useState<Team | null>(null);
-  const [noteTeam, setNoteTeam] = useState<Team>('red');
-  const [noteText, setNoteText] = useState('');
-  const idleIntervalRef = useRef<number | null>(null);
-  const idleToggleRef = useRef(false);
-  const timeoutsRef = useRef<number[]>([]);
+  const [bearAnimation, setBearAnimation] = useState<'idle' | 'listening' | 'speaking'>('idle');
+  const [userPoints, setUserPoints] = useState<DiscussionPoint[]>([]);
+  const [bearPoints, setBearPoints] = useState<DiscussionPoint[]>([]);
+  
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const discussingRef = useRef(false);
-  const activeTeamRef = useRef<Team | null>(null);
-  const lastTeamRef = useRef<Team | null>(null);
-  const isListeningRef = useRef(false);
-  const logIdRef = useRef(0);
-  const logListRef = useRef<HTMLDivElement | null>(null);
+  const messageIdRef = useRef(0);
+  const pointIdRef = useRef(0);
+  const conversationHistoryRef = useRef<Array<{ role: string; content: string }>>([]);
+  const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
 
-  const scheduleTimeout = useCallback((cb: () => void, delay: number) => {
-    const timeout = window.setTimeout(cb, delay);
-    timeoutsRef.current.push(timeout);
-  }, []);
-
-  const clearScheduledTimeouts = useCallback(() => {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
-  }, []);
-
-  const stopBearIdle = useCallback(() => {
-    if (idleIntervalRef.current) {
-      clearInterval(idleIntervalRef.current);
-      idleIntervalRef.current = null;
-    }
-  }, []);
-
-  const startBearIdle = useCallback(() => {
-    stopBearIdle();
-    idleIntervalRef.current = window.setInterval(() => {
-      idleToggleRef.current = !idleToggleRef.current;
-      setBearFrame(idleToggleRef.current ? BEAR_FRAMES.idle : BEAR_FRAMES.idleAlt);
-    }, 2300);
-  }, [stopBearIdle]);
-
-  const bearTalk = useCallback(() => {
-    stopBearIdle();
-    setBearFrame(BEAR_FRAMES.talk);
-    scheduleTimeout(() => setBearFrame(BEAR_FRAMES.talkAlt), 200);
-    scheduleTimeout(() => startBearIdle(), 700);
-  }, [scheduleTimeout, startBearIdle, stopBearIdle]);
-
-  const bearConflict = useCallback(() => {
-    stopBearIdle();
-    setIsBearShocked(true);
-    setBearFrame(BEAR_FRAMES.conflict);
-    scheduleTimeout(() => {
-      setIsBearShocked(false);
-      startBearIdle();
-    }, 600);
-  }, [scheduleTimeout, startBearIdle, stopBearIdle]);
-
-  const bearCelebrate = useCallback(() => {
-    stopBearIdle();
-    setBearFrame(BEAR_FRAMES.celebrate);
-    scheduleTimeout(() => startBearIdle(), 800);
-  }, [scheduleTimeout, startBearIdle, stopBearIdle]);
-
-  const addLogEntry = useCallback((text: string, team?: Team) => {
-    const id = ++logIdRef.current;
-    const timestamp = formatTime(new Date());
-    setLogs((prev) => [...prev, { id, timestamp, text, team }]);
-  }, []);
-
-  const handleConflict = useCallback(
-    (text: string) => {
-      bearConflict();
-      setConflictStatus('조금 다투는 것 같아요…');
-      setMediationText(`"${text}" 라고 말해서 조금 놀랐어요.\n서로의 의견을 다시 차분하게 들어볼까요?`);
-      setShowMediation(true);
-      setBearMessage('곰곰이가 잠시 중재할게요!');
-    },
-    [bearConflict],
-  );
-
-  const handleSpeech = useCallback(
-    (text: string) => {
-      const team = activeTeamRef.current ?? lastTeamRef.current ?? undefined;
-      if (team) {
-        lastTeamRef.current = team;
-      }
-      const prefix = team ? `[${TEAM_LABELS[team]}] ` : '';
-      setLiveSpeech(`${prefix}${text}`);
-      addLogEntry(`${team ? `${TEAM_LABELS[team]}: ` : ''}${text}`, team);
-      bearTalk();
-
-      const hasConflict = CONFLICT_KEYWORDS.some((keyword) => text.includes(keyword));
-      if (hasConflict) {
-        handleConflict(text);
-      }
-    },
-    [addLogEntry, bearTalk, handleConflict],
-  );
-
-  useEffect(() => {
-    const tick = () => setCurrentTime(formatTime(new Date()));
-    const interval = window.setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    startBearIdle();
-    return () => {
-      stopBearIdle();
-      clearScheduledTimeouts();
-      recognitionRef.current?.stop();
-    };
-  }, [clearScheduledTimeouts, startBearIdle, stopBearIdle]);
-
-  useEffect(() => {
-    if (logListRef.current) {
-      logListRef.current.scrollTop = logListRef.current.scrollHeight;
-    }
-  }, [logs]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
+  // 음성 합성 (TTS) 함수
+  const speakText = useCallback((text: string) => {
+    if (!window.speechSynthesis) {
+      console.log('TTS를 지원하지 않는 브라우저입니다.');
       return;
+    }
+
+    // 이전 음성 중지
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // 사용 가능한 한국어 음성 찾기
+    const voices = window.speechSynthesis.getVoices();
+    const koreanVoices = voices.filter(voice => voice.lang.includes('ko'));
+    
+    // 선호하는 음성 순서: Google 한국어 > Microsoft > 기본
+    const preferredVoice = 
+      koreanVoices.find(voice => voice.name.includes('Google')) ||
+      koreanVoices.find(voice => voice.name.includes('Microsoft')) ||
+      koreanVoices.find(voice => voice.name.includes('Heami')) ||
+      koreanVoices[0];
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+      console.log('선택된 음성:', preferredVoice.name);
+    }
+    
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.2; // 말하는 속도 (1.2배)
+    utterance.pitch = 1.15; // 음높이 (곰돌이 느낌)
+    utterance.volume = 1;
+
+    utterance.onstart = () => {
+      setBearAnimation('speaking');
+    };
+
+    utterance.onend = () => {
+      setBearAnimation('idle');
+      // 음성이 끝나면 다시 듣기 모드로 자동 전환
+      if (isListening && recognitionRef.current) {
+        setTimeout(() => {
+          try {
+            recognitionRef.current?.start();
+            setBearAnimation('listening');
+            setBearMessage('계속 이야기해줘!');
+          } catch (error) {
+            console.log('음성 인식 재시작 중 오류:', error);
+          }
+        }, 500);
+      }
+    };
+
+    utterance.onerror = (event) => {
+      console.error('TTS 오류:', event);
+      setBearAnimation('idle');
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }, [isListening]);
+
+  // 음성 인식 초기화
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // TTS 초기화 및 음성 로드
+    if (window.speechSynthesis) {
+      speechSynthesisRef.current = window.speechSynthesis;
+      // 음성 목록 로드 (일부 브라우저에서 필요)
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        const voices = window.speechSynthesis.getVoices();
+        console.log('사용 가능한 한국어 음성:', voices.filter(v => v.lang.includes('ko')).map(v => v.name));
+      };
     }
 
     type SpeechWindow = Window &
@@ -210,22 +149,21 @@ export const SmartDiscussion = () => {
     recognition.continuous = true;
 
     recognition.onstart = () => {
-      isListeningRef.current = true;
-      if (activeTeamRef.current) {
-        setBearMessage(`${TEAM_LABELS[activeTeamRef.current]}이(가) 말하는 중이에요!`);
-      }
+      setIsListening(true);
+      setBearAnimation('listening');
+      setBearMessage('잘 듣고 있어! 편하게 말해봐.');
     };
+
     recognition.onend = () => {
-      isListeningRef.current = false;
-      if (discussingRef.current) {
-        recognition.start();
-      } else if (!activeTeamRef.current) {
-        setBearMessage('버튼을 눌러 이야기해봐요!');
+      setIsListening(false);
+      if (bearAnimation === 'listening') {
+        setBearAnimation('idle');
       }
     };
+
     recognition.onresult = (event: SpeechRecognitionEventLike) => {
       const transcript = event.results[event.resultIndex][0].transcript;
-      handleSpeech(transcript);
+      handleUserSpeech(transcript);
     };
 
     recognitionRef.current = recognition;
@@ -234,337 +172,292 @@ export const SmartDiscussion = () => {
     return () => {
       recognition.stop();
       recognitionRef.current = null;
+      // TTS 정리
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
     };
-  }, [handleSpeech]);
-
-  const handleAddParticipant = useCallback(() => {
-    const trimmed = participantInput.trim();
-    if (!trimmed) return;
-    setParticipants((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]));
-    setParticipantInput('');
-  }, [participantInput]);
-
-  const removeParticipant = useCallback((name: string) => {
-    setParticipants((prev) => prev.filter((p) => p !== name));
   }, []);
 
-  const handleTeamPress = useCallback(
-    (team: Team) => {
-      if (!recognitionRef.current) {
-        setBearMessage('이 브라우저에서는 음성 인식을 사용할 수 없어요.');
-        return;
-      }
+  // 메시지 추가
+  const addMessage = useCallback((speaker: 'user' | 'bear', text: string) => {
+    const id = ++messageIdRef.current;
+    const timestamp = formatTime(new Date());
+    setMessages((prev) => [...prev, { id, speaker, text, timestamp }]);
+  }, []);
 
-      setActiveTeam(team);
-      activeTeamRef.current = team;
-      lastTeamRef.current = team;
-      discussingRef.current = true;
-      setBearMessage(`${TEAM_LABELS[team]}이(가) 말하는 중이에요!`);
-      setLiveSpeech('');
+  // 토론 포인트 추가
+  const addPoint = useCallback((speaker: 'user' | 'bear', text: string) => {
+    const id = ++pointIdRef.current;
+    const timestamp = formatTime(new Date());
+    const point = { id, text, timestamp };
+    
+    if (speaker === 'user') {
+      setUserPoints((prev) => [...prev, point].slice(-5)); // 최근 5개만
+    } else {
+      setBearPoints((prev) => [...prev, point].slice(-5)); // 최근 5개만
+    }
+  }, []);
 
-      if (!isDiscussionActive) {
-        setLogs([]);
-        logIdRef.current = 0;
-        setLogs([]);
-        logIdRef.current = 0;
-        setIsDiscussionActive(true);
-        setShowMediation(false);
-        setConflictStatus('지금은 평화로운 숲이에요');
-        bearCelebrate();
-        addLogEntry(`${TEAM_LABELS[team]}이(가) 토론을 시작했어요.`, team);
+  // 사용자 발화 처리
+  const handleUserSpeech = useCallback(async (text: string) => {
+    console.log('사용자 발화:', text);
+    addMessage('user', text);
+    
+    // 음성 인식 일시 중지 (곰돌이가 말하는 동안)
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+
+    // 곰돌이 생각 중
+    setIsBearThinking(true);
+    setBearAnimation('idle');
+    setBearMessage('음... 곰곰이 생각 중...');
+
+    // 대화 히스토리에 추가
+    conversationHistoryRef.current.push({
+      role: 'user',
+      content: text,
+    });
+
+    try {
+      // 사용자 포인트 추가
+      addPoint('user', text);
+
+      // AI 응답 요청
+      const response = await fetch('http://localhost:5001/api/discussion/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: text,
+          history: conversationHistoryRef.current,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'success' && data.reply) {
+        // 곰돌이 응답
+        addMessage('bear', data.reply);
+        setBearMessage(data.reply);
+        
+        // 곰돌이 포인트 추가
+        addPoint('bear', data.reply);
+        
+        // 대화 히스토리에 추가
+        conversationHistoryRef.current.push({
+          role: 'assistant',
+          content: data.reply,
+        });
+
+        // 음성으로 읽어주기
+        speakText(data.reply);
       } else {
-        addLogEntry(`${TEAM_LABELS[team]} 차례가 시작됐어요.`, team);
+        const errorMsg = '미안해, 잘 못 들었어. 다시 말해줄래?';
+        setBearMessage(errorMsg);
+        setBearAnimation('idle');
+        speakText(errorMsg);
       }
+    } catch (error) {
+      console.error('AI 응답 오류:', error);
+      const errorMsg = '앗, 잠깐 생각이 안 나... 다시 말해줄래?';
+      setBearMessage(errorMsg);
+      setBearAnimation('idle');
+      speakText(errorMsg);
+    } finally {
+      setIsBearThinking(false);
+    }
+  }, [addMessage, addPoint, speakText]);
 
-      if (!isListeningRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (error) {
-          console.error('Speech recognition start failed', error);
-        }
-      }
-    },
-    [addLogEntry, bearCelebrate, isDiscussionActive],
-  );
-
-  const handleTeamRelease = useCallback(
-    (shouldResetSession = false) => {
-      const team = activeTeamRef.current;
-      if (!team) {
-        return;
-      }
-      discussingRef.current = false;
-      if (isListeningRef.current) {
-        recognitionRef.current?.stop();
-      }
-      if (!shouldResetSession) {
-        addLogEntry(`${TEAM_LABELS[team]}이(가) 발언을 마쳤어요.`, team);
-        setBearMessage('다음 팀 버튼을 눌러 주세요!');
-      }
-      activeTeamRef.current = null;
-      setActiveTeam(null);
-      setLiveSpeech('');
-    },
-    [addLogEntry],
-  );
-
-  const handleStopDiscussion = useCallback(() => {
-    handleTeamRelease(true);
-    discussingRef.current = false;
-    setIsDiscussionActive(false);
-    recognitionRef.current?.stop();
-    setBearMessage('오늘 토론이 끝났어요!');
-    setLiveSpeech('');
-    stopBearIdle();
-    setBearFrame(BEAR_FRAMES.wink);
-    scheduleTimeout(() => startBearIdle(), 1200);
-  }, [handleTeamRelease, scheduleTimeout, startBearIdle, stopBearIdle]);
-
-  const handleManualLog = useCallback(() => {
-    const trimmed = noteText.trim();
-    if (!trimmed) {
+  // 말하기 시작
+  const handleStartListening = useCallback(() => {
+    if (!recognitionRef.current || !speechSupported) {
+      alert('음성 인식을 사용할 수 없어요. Chrome 브라우저를 사용해주세요.');
       return;
     }
-    addLogEntry(trimmed, noteTeam);
-    setNoteText('');
-  }, [addLogEntry, noteTeam, noteText]);
 
-  const closeMediationCard = useCallback(() => {
-    setShowMediation(false);
-    setConflictStatus('다시 평화로운 숲이에요');
-    setBearMessage('오늘은 어떤 주제로 이야기해볼까?');
+    try {
+      recognitionRef.current.start();
+      setBearMessage('잘 듣고 있어! 편하게 말해봐.');
+    } catch (error) {
+      console.error('음성 인식 시작 실패:', error);
+    }
+  }, [speechSupported]);
+
+  // 작별 인사 (느린 속도)
+  const speakGoodbye = useCallback((text: string) => {
+    if (!window.speechSynthesis) return;
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    const voices = window.speechSynthesis.getVoices();
+    const koreanVoices = voices.filter(voice => voice.lang.includes('ko'));
+    const preferredVoice = 
+      koreanVoices.find(voice => voice.name.includes('Google')) ||
+      koreanVoices.find(voice => voice.name.includes('Microsoft')) ||
+      koreanVoices.find(voice => voice.name.includes('Heami')) ||
+      koreanVoices[0];
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+    
+    utterance.lang = 'ko-KR';
+    utterance.rate = 0.85; // 느리게
+    utterance.pitch = 1.15;
+    utterance.volume = 1;
+
+    utterance.onstart = () => {
+      setBearAnimation('speaking');
+    };
+
+    utterance.onend = () => {
+      setBearAnimation('idle');
+    };
+
+    window.speechSynthesis.speak(utterance);
   }, []);
 
-  return (
-    <div className="sd-module sd-forest">
-      <div className="sd-forest-decor">
-        <div className="sd-tree sd-tree-left" />
-        <div className="sd-tree sd-tree-right" />
-        <div className="sd-animal sd-rabbit" />
-        <div className="sd-animal sd-squirrel" />
-        <div className="sd-animal sd-bird" />
-      </div>
+  // 말하기 중지 (대화 종료)
+  const handleStopListening = useCallback(() => {
+    // 음성 인식 중지
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+    
+    // TTS 중지
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    
+    setBearAnimation('idle');
+    const goodbyeMsg = '오늘 이야기 재미있었어! 또 만나자!';
+    setBearMessage(goodbyeMsg);
+    speakGoodbye(goodbyeMsg);
+  }, [speakGoodbye]);
 
-      <header className="sd-forest-header">
-        <h1>숲속 곰곰이 스마트 토론 교실</h1>
-        <p>숲속 친구 곰곰이와 함께 재미있게 이야기해봐요</p>
+  // 대화 초기화
+  const handleReset = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+    }
+    // TTS 중지
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setMessages([]);
+    setUserPoints([]);
+    setBearPoints([]);
+    setIsListening(false);
+    setIsBearThinking(false);
+    setBearAnimation('idle');
+    setBearMessage('안녕! 나는 곰곰이야. 오늘은 무엇에 대해 이야기해볼까?');
+    conversationHistoryRef.current = [];
+    messageIdRef.current = 0;
+    pointIdRef.current = 0;
+  }, [isListening]);
+
+
+
+  const userMessages = messages.filter((m) => m.speaker === 'user');
+  const bearMessages = messages.filter((m) => m.speaker === 'bear');
+
+  return (
+    <div className="forest-chat">
+      {/* 헤더 */}
+      <header className="forest-header">
+        <h1>곰곰이와 함께하는 토론 교실</h1>
       </header>
 
-      <div className="sd-layout">
-        <section className="sd-left">
-          <div className="sd-bear-area">
-            <div className="sd-bear-hill" />
-            <img
-              src={bearFrame}
-              alt="곰곰이"
-              className={`sd-bear-img ${isBearShocked ? 'sd-bear-shock' : ''}`}
-            />
-          </div>
-
-          <div className="sd-bear-speech">
-            <div className="sd-bear-bubble">{bearMessage}</div>
-          </div>
-
-          <div className="sd-live-board">
-            <h3>지금 친구들이 말한 내용</h3>
-            <div className="sd-live-text">
-              {liveSpeech ||
-                (activeTeam
-                  ? `${TEAM_LABELS[activeTeam]}이(가) 준비 중이에요.`
-                  : '레드/블루 버튼을 누르고 말해 보세요.')}
-            </div>
-            {activeTeam && (
-              <div className={`sd-team-indicator team-${activeTeam}`}>현재 차례: {TEAM_LABELS[activeTeam]}</div>
+      {/* 메인 레이아웃 */}
+      <div className="forest-layout">
+        {/* 왼쪽: 내 토론 포인트 */}
+        <section className="points-panel user-points">
+          <h3>💭 내 의견</h3>
+          <div className="points-list">
+            {userPoints.length === 0 ? (
+              <div className="empty-points">아직 발언이 없어요</div>
+            ) : (
+              userPoints.map((point) => (
+                <div key={point.id} className="point-card user-card">
+                  <div className="point-time">{point.timestamp}</div>
+                  <div className="point-text">{point.text}</div>
+                </div>
+              ))
             )}
-          </div>
-
-          <div className="sd-status-line">
-            <span className="sd-status-title">곰곰이 진단</span>
-            <span className={`sd-status-value ${conflictStatus.includes('다투') ? 'conflict' : ''}`}>
-              {conflictStatus}
-            </span>
-          </div>
-
-          <div className="sd-tip-box">
-            <div className="sd-tip-title">곰곰이의 토론 약속</div>
-            <ul className="sd-tip-list">
-              <li>한 번에 한 명씩 말해요.</li>
-              <li>친구가 말할 때 끼어들지 않아요.</li>
-              <li>다른 생각은 틀린 게 아니에요.</li>
-            </ul>
           </div>
         </section>
-
-        <section className="sd-right">
-          <div className="sd-panel wood-panel">
-            <h3>토론 준비하기</h3>
-
-            <div className="sd-input-group">
-              <label>현재 시간</label>
-              <div className="sd-time-display sd-text-input" style={{ textAlign: 'center' }}>
-                {currentTime}
-              </div>
-            </div>
-
-            <div className="sd-input-group">
-              <label>참가자 명단</label>
-              <div className="sd-tag-box">
-                {participants.map((name) => (
-                  <span key={name} className="sd-tag">
-                    {name}
-                    <button
-                      type="button"
-                      aria-label={`${name} 제거`}
-                      className="sd-tag-remove"
-                      onClick={() => removeParticipant(name)}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                <input
-                  value={participantInput}
-                  onChange={(event) => setParticipantInput(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      handleAddParticipant();
-                    }
-                  }}
-                  className="sd-tag-input"
-                  placeholder="이름 적고 Enter"
-                />
-              </div>
-            </div>
-
-            <div className="sd-input-group">
-              <label>토론 장소</label>
-              <input
-                value={location}
-                onChange={(event) => setLocation(event.target.value)}
-                className="sd-text-input"
-                placeholder="예: 3학년 2반 교실"
-              />
-            </div>
-
-            <div className="sd-input-group">
-              <label>토론 주제</label>
-              <input
-                value={topic}
-                onChange={(event) => setTopic(event.target.value)}
-                className="sd-text-input"
-                placeholder="예: 숙제를 언제 할까?"
-              />
-            </div>
-
-            <div className="sd-btn-row">
-              <button
-                type="button"
-                className={`sd-btn sd-btn-team sd-btn-team-red ${activeTeam === 'red' ? 'is-active' : ''}`}
-                onMouseDown={() => handleTeamPress('red')}
-                onMouseUp={() => handleTeamRelease()}
-                onMouseLeave={() => handleTeamRelease()}
-                onTouchStart={(event) => {
-                  event.preventDefault();
-                  handleTeamPress('red');
-                }}
-                onTouchEnd={() => handleTeamRelease()}
-                onTouchCancel={() => handleTeamRelease()}
-                disabled={!speechSupported || (activeTeam !== null && activeTeam !== 'red')}
-              >
-                레드팀 토론 시작
-              </button>
-              <button
-                type="button"
-                className={`sd-btn sd-btn-team sd-btn-team-blue ${activeTeam === 'blue' ? 'is-active' : ''}`}
-                onMouseDown={() => handleTeamPress('blue')}
-                onMouseUp={() => handleTeamRelease()}
-                onMouseLeave={() => handleTeamRelease()}
-                onTouchStart={(event) => {
-                  event.preventDefault();
-                  handleTeamPress('blue');
-                }}
-                onTouchEnd={() => handleTeamRelease()}
-                onTouchCancel={() => handleTeamRelease()}
-                disabled={!speechSupported || (activeTeam !== null && activeTeam !== 'blue')}
-              >
-                블루팀 토론 시작
-              </button>
-              <button
-                type="button"
-                className="sd-btn sd-btn-stop"
-                onClick={handleStopDiscussion}
-                disabled={!isDiscussionActive}
-              >
-                토론 종료
-              </button>
-            </div>
-            {!speechSupported && (
-              <p className="sd-warning">⚠️ 브라우저에서 음성 인식을 지원하지 않아요. Chrome을 권장합니다.</p>
-            )}
-
-            {(location || topic) && (
-              <p style={{ fontSize: 13, color: '#4c4334', marginTop: 12 }}>
-                <strong>오늘의 토론</strong> — {location || '장소 미정'} · {topic || '주제를 입력해주세요'}
-              </p>
-            )}
-          </div>
-
-          <div className="sd-panel log-panel">
-            <h3>토론 기록</h3>
-            <div className="sd-log-list" ref={logListRef}>
-              {logs.length ? (
-                logs.map((log) => (
-                  <div key={log.id} className="sd-log-item">
-                    <span className="sd-log-time">{log.timestamp}</span>
-                    {log.team && <span className={`sd-log-badge team-${log.team}`}>{TEAM_LABELS[log.team]}</span>}
-                    <span className="sd-log-text">{log.text}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="sd-log-empty">아직 기록이 없어요.</div>
+        <section className="bear-center">
+          <div className={`bear-container ${bearAnimation}`}>
+            <div className="bear-character">
+              <div className="bear-face">🐻</div>
+              {isBearThinking && (
+                <div className="thinking-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
               )}
             </div>
+          </div>
+          
+          <div className="bear-speech-bubble">
+            <p>{bearMessage}</p>
+          </div>
 
-            <div className="sd-manual-log">
-              <label htmlFor="sd-manual-team" className="sd-manual-label">
-                텍스트 기록
-              </label>
-              <div className="sd-manual-fields">
-                <select
-                  id="sd-manual-team"
-                  value={noteTeam}
-                  onChange={(event) => setNoteTeam(event.target.value as Team)}
-                >
-                  <option value="red">레드팀</option>
-                  <option value="blue">블루팀</option>
-                </select>
-                <textarea
-                  value={noteText}
-                  onChange={(event) => setNoteText(event.target.value)}
-                  placeholder="친구들이 말한 내용을 직접 기록해 보세요."
-                />
-                <button type="button" onClick={handleManualLog}>
-                  기록 저장
-                </button>
-              </div>
-            </div>
+          <div className="control-buttons">
+            <button
+              className={`btn btn-speak ${isListening ? 'active' : ''}`}
+              onClick={handleStartListening}
+              disabled={isListening || isBearThinking || !speechSupported}
+            >
+              🎤 {isListening ? '듣는 중...' : '말하기'}
+            </button>
+            <button
+              className="btn btn-stop"
+              onClick={handleStopListening}
+              disabled={!isListening}
+            >
+              ⏹️ 멈추기
+            </button>
+            <button
+              className="btn btn-reset"
+              onClick={handleReset}
+              disabled={isListening || isBearThinking}
+            >
+              🔄 다시 시작
+            </button>
+          </div>
+
+          {!speechSupported && (
+            <p className="warning-text">
+              ⚠️ 음성 인식을 사용할 수 없어요. Chrome 브라우저를 사용해주세요.
+            </p>
+          )}
+        </section>
+
+        {/* 오른쪽: 곰곰이 토론 포인트 */}
+        <section className="points-panel bear-points">
+          <h3>🐻 곰돌이 의견</h3>
+          <div className="points-list">
+            {bearPoints.length === 0 ? (
+              <div className="empty-points">곰곰이가 아직 말하지 않았어요</div>
+            ) : (
+              bearPoints.map((point) => (
+                <div key={point.id} className="point-card bear-card">
+                  <div className="point-time">{point.timestamp}</div>
+                  <div className="point-text">{point.text}</div>
+                </div>
+              ))
+            )}
           </div>
         </section>
       </div>
-
-      {showMediation && (
-        <div className="sd-mediation-card" role="dialog" aria-modal="true">
-          <div className="sd-mediation-inner">
-            <img src={BEAR_FRAMES.conflict} alt="걱정하는 곰곰이" className="sd-mediation-bear" />
-            <h4>곰곰이의 중재</h4>
-            <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{mediationText}</p>
-            <button type="button" className="sd-btn sd-btn-close" onClick={closeMediationCard}>
-              다시 차분하게 이야기할게요
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

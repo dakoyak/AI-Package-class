@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { useAiLiteracyFullscreen } from '../features/ai-literacy/AiLiteracyFullscreenContext';
-import chalkboardBg from '../assets/칠판백그.png';
+
 
 // define the styled component OUTSIDE the functional component
 const StyledGlobalStyle = createGlobalStyle<{ isModuleFullscreen: boolean }>`
@@ -13,18 +13,13 @@ const StyledGlobalStyle = createGlobalStyle<{ isModuleFullscreen: boolean }>`
   html, body {
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   body {
     font-family: ${({ theme }) => theme.fonts.primary};
     font-size: ${({ theme }) => theme.fonts.sizes.small};
-    color: #f0f0f0;
-    background-image: url(${chalkboardBg});
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    color: ${({ theme }) => theme.colors.text};
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -33,8 +28,7 @@ const StyledGlobalStyle = createGlobalStyle<{ isModuleFullscreen: boolean }>`
 
   #root {
     width: 100%;
-    min-height: 100vh;
-    padding: 0;
+    height: 100%;
   }
 
   h1 {
