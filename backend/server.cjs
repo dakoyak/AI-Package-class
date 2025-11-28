@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const fs = require("fs");
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const initializeDatabase = require("./database/init");
+const initializeDatabase = require("./database/init.cjs");
 const { spawn } = require("child_process");
 
 const app = express();
@@ -61,8 +61,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Challenge routes (OpenAI guardrail)
-const challengeRoutes = require("./routes/challenge");
+const challengeRoutes = require("./routes/challenge.cjs");
 app.use("/api/challenge", challengeRoutes);
+
+// Discussion routes (곰곰이 토론 교실)
+const discussionRoutes = require("./routes/discussion.cjs");
+app.use("/api/discussion", discussionRoutes);
 
 // Sejong Historical Interview routes
 const sejongRoutes = require("../src/HistoricalInterview/backend/sejong-routes.cjs");
