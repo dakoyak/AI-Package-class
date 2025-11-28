@@ -68,6 +68,72 @@ app.use("/api/challenge", challengeRoutes);
 const sejongRoutes = require("../src/HistoricalInterview/backend/sejong-routes.cjs");
 app.use("/api", sejongRoutes(sejongModel, sejongKnowledgeBase));
 
+// TTS endpoint using edge-tts
+app.post("/api/tts", async (req, res) => {
+  const { text } = req.body;
+  
+  if (!text) {
+    return res.status(400).json({ error: "Text is required" });
+  }
+
+  try {
+    const pythonScript = path.join(__dirname, "../src/HistoricalInterview/backend/tts.py");
+    const outputFile = path.join(__dirname, `../temp_audio_${Date.now()}.mp3`);
+    
+    if (!fs.existsSync(pythonScript)) {
+      console.warn("TTS script not found, using browser fallback");
+      return res.status(503).json({ 
+        error: "TTS service not available",
+        message: "Using browser speech synthesis"
+      });
+    }
+
+    // Run Python TTS script
+    const python = spawn("python", [pythonScript, text, outputFile]);
+    
+    let errorOutput = "";
+    
+    python.stderr.on("data", (data) => {
+      errorOutput += data.toString();
+    });
+
+    python.on("close", (code) => {
+      if (code === 0 && fs.existsSync(outputFile)) {
+        // Read the generated audio file
+        const audioBuffer = fs.readFileSync(outputFile);
+        
+        // Clean up temp file
+        fs.unlinkSync(outputFile);
+        
+        // Send audio response
+        res.set("Content-Type", "audio/mpeg");
+        res.send(audioBuffer);
+      } else {
+        console.error("TTS generation failed:", errorOutput);
+        // Fallback to browser TTS
+        res.status(503).json({ 
+          error: "TTS generation failed",
+          message: "Using browser speech synthesis"
+        });
+      }
+    });
+
+    python.on("error", (error) => {
+      console.error("Failed to start Python process:", error);
+      res.status(503).json({ 
+        error: "TTS service error",
+        message: "Using browser speech synthesis"
+      });
+    });
+  } catch (error) {
+    console.error("TTS endpoint error:", error);
+    res.status(503).json({ 
+      error: "TTS service error",
+      message: "Using browser speech synthesis"
+    });
+  }
+});
+
 // Authentication routes
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
@@ -397,7 +463,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
+// Initialize database and start server
+const db = initializeDatabase();
+
 app.listen(PORT, () => {
   console.log(`✓ Server is running on port ${PORT}`);
   console.log(

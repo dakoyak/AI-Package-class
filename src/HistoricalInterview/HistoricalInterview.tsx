@@ -49,6 +49,7 @@ function HistoricalInterview({
         audioRef.current = null;
       }
 
+      // Try backend TTS first (edge-tts)
       const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5001";
       const response = await fetch(`${apiUrl}/api/tts`, {
         method: "POST",
@@ -56,19 +57,29 @@ function HistoricalInterview({
         body: JSON.stringify({ text }),
       });
 
-      if (!response.ok) throw new Error("TTS request failed");
-
-      const blob = await response.blob();
-      const audioUrl = URL.createObjectURL(blob);
-      const audio = new Audio(audioUrl);
-      audioRef.current = audio;
-
-      await audio.play();
+      if (response.ok) {
+        // Backend TTS succeeded
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        audioRef.current = audio;
+        await audio.play();
+      } else {
+        // Backend TTS failed, use browser fallback
+        console.log("Using browser TTS fallback");
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = "ko-KR";
+        speech.rate = 0.9;
+        speech.pitch = 1.0;
+        window.speechSynthesis.speak(speech);
+      }
     } catch (error) {
       console.error("TTS Error:", error);
-      // Fallback to browser TTS if backend fails
+      // Fallback to browser TTS on any error
       const speech = new SpeechSynthesisUtterance(text);
       speech.lang = "ko-KR";
+      speech.rate = 0.9;
+      speech.pitch = 1.0;
       window.speechSynthesis.speak(speech);
     }
   };
