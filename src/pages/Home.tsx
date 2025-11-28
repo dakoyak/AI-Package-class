@@ -114,7 +114,7 @@ const tileData: TileConfig[] = [
     backgroundRepeat: "no-repeat",
   },
   {
-    title: <h2>학급 게시판</h2>,
+    title: "",
     path: ROUTES.dashboard.classBoard,
     backgroundImage: `url(${classBoardBg})`,
     backgroundSize: "100% 100%",
@@ -137,11 +137,11 @@ function Home() {
             const backgroundStyle: CSSProperties | undefined =
               tile.backgroundImage
                 ? {
-                    backgroundImage: tile.backgroundImage,
-                    backgroundSize: tile.backgroundSize,
-                    backgroundPosition: tile.backgroundPosition,
-                    backgroundRepeat: tile.backgroundRepeat,
-                  }
+                  backgroundImage: tile.backgroundImage,
+                  backgroundSize: tile.backgroundSize,
+                  backgroundPosition: tile.backgroundPosition,
+                  backgroundRepeat: tile.backgroundRepeat,
+                }
                 : tile.img
                   ? { backgroundImage: `url(${tile.img})` }
                   : tile.color
