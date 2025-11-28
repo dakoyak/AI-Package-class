@@ -15,7 +15,6 @@ import SmartDiscussion from './features/smartDiscussion/SmartDiscussion';
 import ActivityLogPage from './pages/ActivityLogPage';
 import ClassBoardPage from './pages/ClassBoardPage';
 import ActivityTracker from './components/ActivityTracker';
-import AuthFooter from './shared/AuthFooter';
 
 // Imported from router.jsx
 import RootLayout from './layouts/RootLayout';
@@ -28,7 +27,7 @@ import CreativityLanding from './features/creativity/CreativityLanding';
 import Home from './pages/Home'; // Re-import Home for the root route
 import { PerspectiveSwitcher } from './features/perspectiveSwitcher/PerspectiveSwitcher';
 
-const noopLessonHook = () => {};
+const noopLessonHook = () => { };
 
 const HistoricalInterviewLesson = () => (
   <HistoricalInterview onStartLesson={noopLessonHook} onEndLesson={noopLessonHook} />
@@ -82,7 +81,6 @@ function App() {
                 <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
               </Route>
             </Routes>
-            <AuthFooter />
           </>
         </ThemeProvider>
       </BrowserRouter>

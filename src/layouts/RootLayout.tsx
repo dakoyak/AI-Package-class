@@ -1,7 +1,9 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { creativityModules, getCreativityModulePath } from '../features/creativity/modules';
 import { ROUTES } from '../routes/paths';
 import styles from './RootLayout.module.css';
+import AuthHeader from '../shared/AuthHeader';
 
 type NavigationItem = {
   label: string;
@@ -44,65 +46,56 @@ const navItems: NavigationItem[] = [
   {
     label: '몰입형 체험',
     path: ROUTES.immersive.history,
-    
+
   },
   {
     label: '논리/협업',
     path: ROUTES.collaboration.smartDiscussion,
-   
+
   },
   { label: '나의활동 기록', path: ROUTES.dashboard.activityLog },
   { label: '학급 게시판', path: ROUTES.dashboard.classBoard },
 ];
 
+const notices = [
+  "오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! 💡",
+  "🎉 3학년 2반 11번 이평안 오늘 생일! 축하합니다! 🎂",
+  "📢 다음 주 월요일은 개교기념일입니다. 학교에 오지 마세요! 🏫",
+];
+
 function RootLayout() {
+  const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0);
+  const location = useLocation();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentNoticeIndex((prev) => (prev + 1) % notices.length);
+    }, 3000); // 3초마다 변경
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <div className={styles.noticeBar}>
-          <div className={styles.noticeTrack}>
+        <NavLink to={ROUTES.home} className={styles.homeLink}>
+          <div className={styles.homeButton}>
+            <img src="/src/assets/eraser.png" alt="홈으로" />
+          </div>
+        </NavLink>
+
+        <div
+          className={styles.noticeBar}
+          style={{ visibility: location.pathname === ROUTES.home ? 'visible' : 'hidden' }}
+        >
+          <div className={styles.noticeContent} key={currentNoticeIndex}>
             <p className={styles.noticeText}>
-              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
-            </p>
-            <p className={styles.noticeText} aria-hidden="true">
-              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
+              {notices[currentNoticeIndex]}
             </p>
           </div>
         </div>
-        <nav className={styles.nav}>
-          {navItems.map((item) => (
-            <div
-              key={item.path}
-              className={item.submenu ? `${styles.navItem} ${styles.hasMenu}` : styles.navItem}
-            >
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  isActive ? `${styles.link} ${styles.active}` : styles.link
-                }
-              >
-                {item.label}
-              </NavLink>
 
-              {item.submenu && (
-                <div className={styles.submenu}>
-                  {item.submenu.map((child) => (
-                    <NavLink
-                      key={child.path}
-                      to={child.path}
-                      className={({ isActive }) =>
-                        isActive ? `${styles.subLink} ${styles.subActive}` : styles.subLink
-                      }
-                    >
-                      <span className={styles.subLabel}>{child.menuLabel}</span>
-                      <span className={styles.subSummary}>{child.summary}</span>
-                    </NavLink>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
+        <AuthHeader />
       </header>
       <main className={styles.main}>
         <Outlet />
