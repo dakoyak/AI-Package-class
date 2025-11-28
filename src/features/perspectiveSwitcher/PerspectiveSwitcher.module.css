@@ -3,7 +3,7 @@
 .wrapper {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   background: linear-gradient(to bottom, #f5e6d3 0%, #e8d4b8 100%);
   overflow: hidden;
   display: flex;
@@ -19,14 +19,12 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: 
-    repeating-linear-gradient(
-      0deg,
+  background-image:
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 2px,
       rgba(139, 90, 43, 0.03) 2px,
-      rgba(139, 90, 43, 0.03) 4px
-    );
+      rgba(139, 90, 43, 0.03) 4px);
   pointer-events: none;
   z-index: 0;
 }
@@ -44,10 +42,13 @@
 }
 
 @keyframes floatHeart {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
     opacity: 0.3;
   }
+
   50% {
     transform: translateY(-20px) rotate(10deg);
     opacity: 0.5;
@@ -85,7 +86,7 @@
   border: 4px solid #8b5a2b;
   border-radius: 8px 24px 24px 8px;
   padding: 24px;
-  box-shadow: 
+  box-shadow:
     -8px 0 0 -4px #d4a574,
     -16px 0 0 -8px #c9985f,
     8px 8px 24px rgba(139, 90, 43, 0.3);
@@ -101,11 +102,10 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(to bottom, 
-    #d4a574 0%,
-    #c9985f 50%,
-    #d4a574 100%
-  );
+  background: linear-gradient(to bottom,
+      #d4a574 0%,
+      #c9985f 50%,
+      #d4a574 100%);
 }
 
 /* 책 페이지 구멍 */
@@ -119,7 +119,7 @@
   height: 8px;
   background: #f5e6d3;
   border-radius: 50%;
-  box-shadow: 
+  box-shadow:
     0 -40px 0 #f5e6d3,
     0 40px 0 #f5e6d3;
 }
@@ -268,9 +268,12 @@
 }
 
 @keyframes ribbonFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(-50%) translateY(0);
   }
+
   50% {
     transform: translateX(-50%) translateY(-5px);
   }
@@ -282,7 +285,7 @@
   background: #fff;
   border: 6px solid #8b5a2b;
   border-radius: 12px;
-  box-shadow: 
+  box-shadow:
     0 10px 30px rgba(139, 90, 43, 0.4),
     inset 0 0 20px rgba(212, 165, 116, 0.2);
   position: relative;
@@ -316,13 +319,16 @@
 }
 
 @keyframes bookGlow {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 10px 30px rgba(139, 90, 43, 0.4),
       inset 0 0 20px rgba(212, 165, 116, 0.2);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 10px 40px rgba(139, 90, 43, 0.6),
       inset 0 0 30px rgba(212, 165, 116, 0.4);
   }
@@ -343,14 +349,12 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: 
-    repeating-linear-gradient(
-      0deg,
+  background-image:
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 20px,
       rgba(212, 165, 116, 0.1) 20px,
-      rgba(212, 165, 116, 0.1) 21px
-    );
+      rgba(212, 165, 116, 0.1) 21px);
   opacity: 0.5;
 }
 
@@ -369,10 +373,13 @@
 }
 
 @keyframes glow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(0.8);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 0.3;
@@ -381,7 +388,7 @@
 
 /* 책 내부 장식 - 코너 장식 */
 .portalInner {
-  background-image: 
+  background-image:
     linear-gradient(135deg, #d4a574 0%, transparent 15%),
     linear-gradient(225deg, #d4a574 0%, transparent 15%),
     linear-gradient(45deg, #d4a574 0%, transparent 15%),
@@ -440,9 +447,12 @@
 }
 
 @keyframes fadeText {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.5;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -473,7 +483,7 @@
   border: 4px solid #8b5a2b;
   border-radius: 24px 8px 8px 24px;
   padding: 24px;
-  box-shadow: 
+  box-shadow:
     8px 0 0 -4px #d4a574,
     16px 0 0 -8px #c9985f,
     -8px 8px 24px rgba(139, 90, 43, 0.3);
@@ -492,11 +502,10 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(to bottom, 
-    #d4a574 0%,
-    #c9985f 50%,
-    #d4a574 100%
-  );
+  background: linear-gradient(to bottom,
+      #d4a574 0%,
+      #c9985f 50%,
+      #d4a574 100%);
 }
 
 /* 책 페이지 구멍 */
@@ -510,7 +519,7 @@
   height: 8px;
   background: #f5e6d3;
   border-radius: 50%;
-  box-shadow: 
+  box-shadow:
     0 -40px 0 #f5e6d3,
     0 40px 0 #f5e6d3;
 }
@@ -586,16 +595,28 @@
   animation: slideIn 0.5s ease-out backwards;
 }
 
-.resultItem:nth-child(1) { animation-delay: 0.1s; }
-.resultItem:nth-child(2) { animation-delay: 0.2s; }
-.resultItem:nth-child(3) { animation-delay: 0.3s; }
-.resultItem:nth-child(4) { animation-delay: 0.4s; }
+.resultItem:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.resultItem:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.resultItem:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.resultItem:nth-child(4) {
+  animation-delay: 0.4s;
+}
 
 @keyframes slideIn {
   from {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
