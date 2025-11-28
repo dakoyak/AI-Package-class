@@ -1,7 +1,10 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { creativityModules, getCreativityModulePath } from '../features/creativity/modules';
-import { ROUTES } from '../routes/paths';
-import styles from './RootLayout.module.css';
+import { NavLink, Outlet } from "react-router-dom";
+import {
+  creativityModules,
+  getCreativityModulePath,
+} from "../features/creativity/modules";
+import { ROUTES } from "../routes/paths";
+import styles from "./RootLayout.module.css";
 
 type NavigationItem = {
   label: string;
@@ -16,43 +19,41 @@ type NavigationItem = {
 const immersiveNavItems = [
   {
     path: ROUTES.immersive.history,
-    menuLabel: 'AI 역사 인터뷰',
-    summary: '세종대왕과 실시간 대화 체험',
+    menuLabel: "AI 역사 인터뷰",
+    summary: "세종대왕과 실시간 대화 체험",
   },
   {
     path: ROUTES.immersive.coach,
-    menuLabel: 'AI 체육 코치',
-    summary: '포즈 인식으로 운동 피드백 받기',
+    menuLabel: "AI 피트니스 코치",
+    summary: "포즈 인식으로 운동 피드백 받기",
   },
 ];
 
 const collaborationNavItems = [
   {
     path: ROUTES.collaboration.smartDiscussion,
-    menuLabel: '곰곰이 스마트 토론',
-    summary: '음성 인식으로 갈등을 중재하는 토론 수업',
+    menuLabel: "곰곰이 스마트 토론",
+    summary: "음성 인식으로 갈등을 중재하는 토론 수업",
   },
 ];
 
 const navItems: NavigationItem[] = [
-  { label: '홈', path: ROUTES.home },
+  { label: "홈", path: ROUTES.home },
   {
-    label: '창의력',
+    label: "창의력",
     path: ROUTES.creativity.root,
   },
-  { label: 'AI 리터러시', path: ROUTES.aiLiteracy.root },
+  { label: "AI 리터러시", path: ROUTES.aiLiteracy.root },
   {
-    label: '몰입형 체험',
+    label: "몰입형 체험",
     path: ROUTES.immersive.history,
-    
   },
   {
-    label: '논리/협업',
+    label: "논리/협업",
     path: ROUTES.collaboration.smartDiscussion,
-   
   },
-  { label: '나의활동 기록', path: ROUTES.dashboard.activityLog },
-  { label: '학급 게시판', path: ROUTES.dashboard.classBoard },
+  { label: "나의활동 기록", path: ROUTES.dashboard.activityLog },
+  { label: "학급 게시판", path: ROUTES.dashboard.classBoard },
 ];
 
 function RootLayout() {
@@ -62,10 +63,12 @@ function RootLayout() {
         <div className={styles.noticeBar}>
           <div className={styles.noticeTrack}>
             <p className={styles.noticeText}>
-              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
+              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해
+              보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
             </p>
             <p className={styles.noticeText} aria-hidden="true">
-              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
+              오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해
+              보세요! · 3학년 2반 11번 이평안 오늘생일!🗂️ .
             </p>
           </div>
         </div>
@@ -73,7 +76,11 @@ function RootLayout() {
           {navItems.map((item) => (
             <div
               key={item.path}
-              className={item.submenu ? `${styles.navItem} ${styles.hasMenu}` : styles.navItem}
+              className={
+                item.submenu
+                  ? `${styles.navItem} ${styles.hasMenu}`
+                  : styles.navItem
+              }
             >
               <NavLink
                 to={item.path}
@@ -91,7 +98,9 @@ function RootLayout() {
                       key={child.path}
                       to={child.path}
                       className={({ isActive }) =>
-                        isActive ? `${styles.subLink} ${styles.subActive}` : styles.subLink
+                        isActive
+                          ? `${styles.subLink} ${styles.subActive}`
+                          : styles.subLink
                       }
                     >
                       <span className={styles.subLabel}>{child.menuLabel}</span>
