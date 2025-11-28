@@ -19,7 +19,6 @@ import SmartDiscussion from './features/smartDiscussion/SmartDiscussion';
 import ActivityLogPage from './pages/ActivityLogPage';
 import ClassBoardPage from './pages/ClassBoardPage';
 import ActivityTracker from './components/ActivityTracker';
-import AuthFooter from './shared/AuthFooter';
 
 // Imported from router.jsx
 import RootLayout from './layouts/RootLayout';
@@ -32,7 +31,7 @@ import CreativityLanding from './features/creativity/CreativityLanding';
 import Home from './pages/Home'; // Re-import Home for the root route
 import { PerspectiveSwitcher } from './features/perspectiveSwitcher/PerspectiveSwitcher';
 
-const noopLessonHook = () => {};
+const noopLessonHook = () => { };
 
 const HistoricalInterviewLesson = () => (
   <HistoricalInterview onStartLesson={noopLessonHook} onEndLesson={noopLessonHook} />
@@ -67,27 +66,26 @@ function App() {
                     <Route path="challenge/:missionType/:challengeId" element={<LiveChallengePage />} />
                   </Route>
 
-                {/* Routes from router.jsx, nested under /creative-classroom */}
-                <Route path={ROUTE_BASE.creativeClassroom}>
-                  {/* Home was here, but now it's the root */}
-                  <Route path="creativity" element={<CreativityStudio />}>
-                    <Route index element={<CreativityLanding />} />
-                    <Route path="sparring" element={<SparringLab />} />
-                    <Route path="art" element={<ArtWorkshop />} />
-                    <Route path="writing" element={<WritingAtelier />} />
+                  {/* Routes from router.jsx, nested under /creative-classroom */}
+                  <Route path={ROUTE_BASE.creativeClassroom}>
+                    {/* Home was here, but now it's the root */}
+                    <Route path="creativity" element={<CreativityStudio />}>
+                      <Route index element={<CreativityLanding />} />
+                      <Route path="sparring" element={<SparringLab />} />
+                      <Route path="art" element={<ArtWorkshop />} />
+                      <Route path="writing" element={<WritingAtelier />} />
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* Immersive experience routes */}
-                <Route path={ROUTES.immersive.history} element={<HistoricalInterviewLesson />} />
-                <Route path={ROUTES.immersive.coach} element={<FitnessCoachLesson />} />
-                <Route path={ROUTES.collaboration.smartDiscussion} element={<SmartDiscussion />} />
-                <Route path={ROUTES.collaboration.perspective} element={<PerspectiveSwitcher />} />
-                <Route path={ROUTES.dashboard.activityLog} element={<ActivityLogPage />} />
-                <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
-              </Route>
+                  {/* Immersive experience routes */}
+                  <Route path={ROUTES.immersive.history} element={<HistoricalInterviewLesson />} />
+                  <Route path={ROUTES.immersive.coach} element={<FitnessCoachLesson />} />
+                  <Route path={ROUTES.collaboration.smartDiscussion} element={<SmartDiscussion />} />
+                  <Route path={ROUTES.collaboration.perspective} element={<PerspectiveSwitcher />} />
+                  <Route path={ROUTES.dashboard.activityLog} element={<ActivityLogPage />} />
+                  <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
+                </Route>
               </Routes>
-              <AuthFooter />
             </>
           </AiLiteracyFullscreenProvider>
         </ThemeProvider>
