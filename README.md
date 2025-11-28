@@ -26,6 +26,13 @@ AI Creative Classroom은 초등학생들을 위한 AI 기반 창의 융합 교�
 - **Routing:** `react-router-dom`
 - **State Management:** Component state, React Context
 
+- **Framework:** React (with Vite)
+- **Language:** TypeScript
+- **Styling:** Styled-components
+- **AI/ML:** `@google/generative-ai`, `@mediapipe/tasks-vision`
+- **Routing:** `react-router-dom`
+- **State Management:** Component state, React Context
+
 ### Backend
 
 - **Framework:** Node.js, Express
@@ -71,8 +78,13 @@ git clone https://github.com/your-username/ai-creative-classroom.git
 cd ai-creative-classroom
 
 # Frontend 의존성 설치
+git clone https://github.com/your-username/ai-creative-classroom.git
+cd ai-creative-classroom
+
+# Frontend 의존성 설치
 npm install
 
+# Backend 의존성 설치
 # Backend 의존성 설치
 cd backend
 npm install
@@ -119,8 +131,54 @@ FRONTEND_URL=http://localhost:5173
 #### 터미널 1: Frontend (Vite 개발 서버)
 
 ```bash
+cd ..
+```
+
+### 3. 환경 변수 설정
+
+프로젝트 루트와 `backend` 디렉토리에 각각 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
+
+#### 루트 디렉토리 (`.env`)
+
+`.env.example` 파일을 참고하여 `.env` 파일을 생성하세요.
+
+```env
+# Vite에서 사용하는 Gemini API 키
+VITE_GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+```
+
+#### 백엔드 디렉토리 (`backend/.env`)
+
+```env
+# Gemini API 키
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+
+# OpenAI API 키 (Guardrail 기능용)
+OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+
+# 서버 포트
+PORT=5001
+
+# Frontend URL (CORS 설정용)
+FRONTEND_URL=http://localhost:5173
+```
+
+### 4. 데이터베이스 초기화
+
+백엔드 서버를 처음 실행하면 `database.db` 파일이 자동으로 생성되고 초기화됩니다.
+
+### 5. 애플리케이션 실행
+
+두 개의 터미널을 열고 각각 다음 명령어를 실행합니다.
+
+#### 터미널 1: Frontend (Vite 개발 서버)
+
+```bash
 npm run dev
 ```
+프론트엔드 서버는 `http://localhost:5173` 에서 실행됩니다.
+
+#### 터미널 2: Backend (Express 서버)
 프론트엔드 서버는 `http://localhost:5173` 에서 실행됩니다.
 
 #### 터미널 2: Backend (Express 서버)

@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import GlassButton from '../../shared/GlassButton';
-import LoadingVideo from '../../shared/LoadingVideo';
 import { requestSparringScenario } from '../../services/geminiTasks';
+import loadingVideo from '../../assets/lo.mp4';
 import styles from './SparringLab.module.css';
 
 function SparringLab() {
@@ -15,6 +16,7 @@ function SparringLab() {
   const handleRun = async () => {
     setLoading(true);
     setError('');
+    setOutput(''); // Clear previous output
     try {
       const text = await requestSparringScenario({ classicStory, twist, focus });
       setOutput(text);
@@ -26,45 +28,77 @@ function SparringLab() {
     }
   };
 
+  const handleReset = () => {
+    setOutput('');
+    setError('');
+  };
+
   return (
     <section className={styles.panel}>
       <header className={styles.header}>
         <p className={styles.label}>상상 스파링</p>
         <h3 className={styles.title}>AI 스파링 파트너</h3>
-        <p className={styles.desc}>Gemini가 엉뚱한 반론을 던져 이야기 재구성을 돕습니다.</p>
+        <p className={styles.desc}>AI가 엉뚱한 반론을 던져 이야기 재구성을 돕습니다.</p>
       </header>
 
-      <div className={styles.form}>
-        <label className={styles.field}>
-          <span>기준 동화</span>
-          <input value={classicStory} onChange={(event) => setClassicStory(event.target.value)} />
-        </label>
+      {/* Loading Overlay */}
+      {loading && (
+        <div className={styles.loadingOverlay}>
+          <video
+            src={loadingVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className={styles.loadingVideo}
+          />
+          <p className={styles.loadingText}>AI가 엉뚱한 상상을 하고 있습니다...</p>
+        </div>
+      )}
 
-        <label className={styles.field}>
-          <span>엉뚱한 반론</span>
-          <input value={twist} onChange={(event) => setTwist(event.target.value)} />
-        </label>
+      {/* Result View */}
+      {!loading && output && (
+        <div className={styles.resultContainer}>
+          <article className={styles.output}>
+            <ReactMarkdown>{output}</ReactMarkdown>
+          </article>
+          <div className={styles.actionWrapper} style={{ marginTop: '2rem' }}>
+            <GlassButton onClick={handleReset}>
+              다시 스파링하기
+            </GlassButton>
+          </div>
+        </div>
+      )}
 
-        <label className={styles.field}>
-          <span>수업 초점</span>
-          <input value={focus} onChange={(event) => setFocus(event.target.value)} />
-        </label>
-      </div>
+      {/* Input Form */}
+      {!loading && !output && (
+        <>
+          <div className={styles.form}>
+            <label className={styles.field}>
+              <span>기준 동화</span>
+              <input value={classicStory} onChange={(event) => setClassicStory(event.target.value)} />
+            </label>
 
-      <div className={styles.actionWrapper}>
-        <GlassButton onClick={handleRun} disabled={loading}>
-          {loading ? '생성 중...' : '창의력 스파링 실행'}
-        </GlassButton>
-        <LoadingVideo active={loading} />
-      </div>
+            <label className={styles.field}>
+              <span>엉뚱한 반론</span>
+              <input value={twist} onChange={(event) => setTwist(event.target.value)} />
+            </label>
+
+            <label className={styles.field}>
+              <span>수업 초점</span>
+              <input value={focus} onChange={(event) => setFocus(event.target.value)} />
+            </label>
+          </div>
+
+          <div className={styles.actionWrapper}>
+            <GlassButton onClick={handleRun} disabled={loading}>
+              창의력 스파링 실행
+            </GlassButton>
+          </div>
+        </>
+      )}
 
       {error && <p className={styles.error}>{error}</p>}
-
-      {output && (
-        <article className={styles.output}>
-          <pre>{output}</pre>
-        </article>
-      )}
     </section>
   );
 }

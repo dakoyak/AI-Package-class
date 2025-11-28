@@ -1,7 +1,7 @@
 .authContainer {
   position: fixed;
-  bottom: 48px;
-  right: 80px;
+  bottom: 24px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 1.2rem;

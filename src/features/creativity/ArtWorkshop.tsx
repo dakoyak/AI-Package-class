@@ -1,8 +1,10 @@
+
 import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 import GlassButton from '../../shared/GlassButton';
 import { requestArtStyleRender, type ArtStyleResult } from '../../services/geminiTasks';
-import styles from './ArtWorkshop.module.css';
+import loadingVideo from '../../assets/lo.mp4';
+import './ArtWorkshop.css';
 
 type ArtStylePreset = {
   label: string;
@@ -10,23 +12,26 @@ type ArtStylePreset = {
   prompt: string;
 };
 
-const stylePresets: ArtStylePreset[] = [
+const stylePresets = [
   {
+    value: 'vangogh',
     label: '고흐',
-    value: 'van-gogh',
-    prompt:
-      'Vincent van Gogh inspired oil painting with swirling brush strokes and intense complementary colors',
+    prompt: 'Starry Night style by Vincent van Gogh, thick impasto brushstrokes, swirling patterns, vibrant blue and yellow colors, expressive texture, oil painting style',
   },
   {
-    label: '모네',
     value: 'monet',
-    prompt: 'Claude Monet style impressionist painting with soft light, pastel palette, and loose brushwork',
+    label: '모네',
+    prompt: 'Impressionist style by Claude Monet, soft light, dappled sunlight, loose brushstrokes, pastel colors, water lilies atmosphere, dreamy and atmospheric',
   },
   {
+    value: 'pixel',
     label: '픽셀 아트',
-    value: 'pixel-art',
-    prompt:
-      'Retro pixel art rendered at 64x64 grid with bold outlines and flat colors, reminiscent of classic 8-bit games',
+    prompt: '16-bit pixel art style, retro game aesthetic, limited color palette, clean sharp edges, blocky details, nostalgic arcade look',
+  },
+  {
+    value: 'watercolor',
+    label: '수채화',
+    prompt: 'Soft watercolor painting, wet-on-wet technique, gentle color bleeding, paper texture, artistic and fluid, dreamy atmosphere, light and airy',
   },
 ];
 
@@ -34,7 +39,7 @@ const resolveResultPreview = (payload: ArtStyleResult | null): string => {
   if (!payload) {
     return '';
   }
-  return payload.dataUrl || payload.fileUri || payload.imageUrl || payload.resultUrl || '';
+  return payload.dataUrl || '';
 };
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -61,17 +66,19 @@ function ArtWorkshop() {
   const [previewUrl, setPreviewUrl] = useState('');
   const [status, setStatus] = useState<JobStatus>('idle');
   const [resultImage, setResultImage] = useState<ArtStyleResult | null>(null);
-  const [description, setDescription] = useState('비 오는 날 창밖 풍경을 그린 친구의 작품');
   const [error, setError] = useState('');
 
   const selectedPreset = stylePresets.find((preset) => preset.value === selectedStyle);
   const resultPreviewSrc = resolveResultPreview(resultImage);
+
+  const [refinementPrompt, setRefinementPrompt] = useState('');
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextFile = event.target.files?.[0] ?? null;
     setFile(nextFile);
     setResultImage(null);
     setError('');
+    setStatus('idle');
 
     if (nextFile) {
       setPreviewUrl(URL.createObjectURL(nextFile));
@@ -83,10 +90,6 @@ function ArtWorkshop() {
   const handleStyleTransfer = async () => {
     if (!file) {
       setError('먼저 내 그림 파일을 업로드하세요.');
-      return;
-    }
-    if (!description.trim()) {
-      setError('학생 그림 설명을 입력해주세요.');
       return;
     }
 
@@ -101,7 +104,6 @@ function ArtWorkshop() {
         mimeType: file.type,
         styleLabel: selectedPreset?.label ?? '선택 스타일',
         stylePrompt: selectedPreset?.prompt ?? '',
-        description: description.trim(),
       });
       setResultImage(rendered);
       setStatus('done');
@@ -112,80 +114,175 @@ function ArtWorkshop() {
     }
   };
 
-  return (
-    <section className={styles.panel}>
-      <header className={styles.header}>
-        <p className={styles.label}>AI 아트 워크숍</p>
-        <h3 className={styles.title}>나의 그림을 명작 스타일로 변환</h3>
-        <p className={styles.desc}>그림을 업로드하면 선택한 작가 스타일로 변환해 드립니다.</p>
-        <p className={styles.notice}>Gemini 이미지 모델로 변환하고 있습니다.</p>
-      </header>
+  const handleRegenerate = async () => {
+    if (!file || !selectedStyle) return;
 
-      <div className={styles.controls}>
-        <label className={styles.field}>
-          <span>이미지 업로드</span>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-        </label>
+    setStatus('running');
+    setError('');
+    // Keep the previous result visible while regenerating if desired, or clear it. 
+    // Let's keep it to avoid flickering too much, or clear it to show loading.
+    // Clearing it feels more responsive to the "new action".
+    setResultImage(null);
 
-        <label className={styles.field}>
-          <span>스타일 선택</span>
-          <div className={styles.styleChoices}>
-            {stylePresets.map((preset) => (
-              <button
-                key={preset.value}
-                type="button"
-                className={`${styles.styleButton} ${preset.value === selectedStyle ? styles.active : ''}`}
-                onClick={() => setSelectedStyle(preset.value)}
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-        </label>
+    try {
+      const base64Image = await fileToBase64(file);
 
-        <label className={styles.field}>
-          <span>학생 그림 설명</span>
-          <textarea
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="예: 빗속에서 우산을 쓴 친구와 창밖 나무를 그린 작품"
-          />
-          <small className={styles.helper}>
-            업로드한 그림을 간단히 설명하면 Gemini가 구도를 이해하고 스타일 변환 이미지를 생성합니다.
-          </small>
-        </label>
-      </div>
+      const selectedPreset = stylePresets.find(p => p.value === selectedStyle);
 
-      <GlassButton onClick={handleStyleTransfer} disabled={status === 'running'}>
-        {status === 'running' ? 'Gemini 스타일 적용 중...' : '스타일 변환 실행'}
-      </GlassButton>
+      // Combine original style prompt with user's refinement
+      const combinedPrompt = refinementPrompt
+        ? `${selectedPreset?.prompt ?? ''}. Additional requirements: ${refinementPrompt}`
+        : (selectedPreset?.prompt ?? '');
 
-      {error && <p className={styles.error}>{error}</p>}
+      const rendered = await requestArtStyleRender({
+        imageBase64: base64Image,
+        mimeType: file.type,
+        styleLabel: selectedPreset?.label ?? '선택 스타일',
+        stylePrompt: combinedPrompt,
+      });
+      setResultImage(rendered);
+      setStatus('done');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '재생성에 실패했습니다.';
+      setError(message);
+      setStatus('done'); // Return to done state to show error and allow retry
+    }
+  };
 
-      <div className={styles.previewArea}>
-        {previewUrl && <img src={previewUrl} alt="업로드 미리보기" />}
-        {status === 'running' && (
-          <div className={styles.overlay}>
-            <div className={styles.overlayBox}>
-              <p className={styles.overlayText}>내 그림을 {selectedPreset?.label} 스타일로 다시 그리는 중...</p>
-            </div>
-          </div>
-        )}
-      </div>
+  const handleReset = () => {
+    setStatus('idle');
+    setResultImage(null);
+    setFile(null);
+    setPreviewUrl('');
+    setError('');
+    setRefinementPrompt('');
+  };
 
-      {status === 'done' && resultPreviewSrc && (
-        <div className={styles.result}>
-          <p className={styles.resultText}>
-            {selectedPreset?.label} 스타일로 재해석된 결과물을 확인해 보세요
+  // Render Result View
+  if (status === 'done' && resultPreviewSrc) {
+    return (
+      <div className="aw-layout fade-in">
+        <div className="aw-container-result">
+          <h3 className="aw-title-center"> 변환 완료!</h3>
+          <p className="aw-desc-center">
+            {selectedPreset?.label} 스타일로 재탄생한 작품입니다.
           </p>
-          <div className={styles.resultPreview}>
+
+          <div className="aw-result-large">
             <img src={resultPreviewSrc} alt={`${selectedPreset?.label} 스타일 결과물`} />
           </div>
-          {resultImage?.message && <small className={styles.helper}>{resultImage.message}</small>}
-          <p className={styles.resultNote}>Gemini가 학생 그림의 구도를 살려 화풍만 덧입혔습니다.</p>
+
+          {/* Refinement Section */}
+          <div className="aw-refine-area">
+            <input
+              type="text"
+              className="aw-refine-input"
+              placeholder="추가 요청사항을 입력하세요 "
+              value={refinementPrompt}
+              onChange={(e) => setRefinementPrompt(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleRegenerate()}
+            />
+            <button className="aw-regenerate-btn" onClick={handleRegenerate}>
+              다시 그리기
+            </button>
+          </div>
+
+          <div className="aw-actions">
+            <button
+              className="aw-download-btn large"
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = resultPreviewSrc;
+                link.download = `art-workshop-${selectedPreset?.value}-${Date.now()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+            >
+              <span> 이미지 저장하기</span>
+            </button>
+
+            <button className="aw-reset-btn" onClick={handleReset}>
+              🔄 다른 그림 그리기
+            </button>
+          </div>
+
+          {resultImage?.message && <p className="aw-message-toast">{resultImage.message}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  // Render Input View
+  return (
+    <div className="aw-page-wrapper">
+      {/* Header Row: Title & Execute Button */}
+      <header className="aw-header-row">
+        <div className="aw-header-info">
+          <h3 className="aw-title">AI 아트 워크숍</h3>
+          <p className="aw-desc">나의 그림을 명작 스타일로 변환해보세요.</p>
+        </div>
+
+        <GlassButton
+          onClick={handleStyleTransfer}
+          disabled={status === 'running' || !file}
+          className="aw-execute-btn-top"
+        >
+          {status === 'running' ? '변환 중...' : ' 스타일 변환 실행'}
+        </GlassButton>
+      </header>
+
+      {/* Workspace Row: Sidebar & Main Box */}
+      <div className="aw-workspace">
+        {/* Left Sidebar: Style Buttons */}
+        <aside className="aw-sidebar">
+          {stylePresets.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              className={`aw-style-card-side ${preset.value === selectedStyle ? 'selected' : ''}`}
+              onClick={() => setSelectedStyle(preset.value)}
+            >
+              <span className="aw-style-name">{preset.label}</span>
+            </button>
+          ))}
+        </aside>
+
+        {/* Main Content Box */}
+        <main className="aw-container">
+          <div className="aw-upload-zone">
+            {previewUrl ? (
+              <div className="aw-preview-wrapper">
+                <img src={previewUrl} alt="업로드 미리보기" />
+                <button className="aw-remove-btn" onClick={() => { setFile(null); setPreviewUrl(''); }}>✕</button>
+              </div>
+            ) : (
+              <label className="aw-upload-label">
+                <span className="aw-upload-icon">🖼️</span>
+                <span>이미지 업로드</span>
+                <input type="file" accept="image/*" onChange={handleFileChange} />
+              </label>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {error && <p className="aw-error-message">{error}</p>}
+
+      {status === 'running' && (
+        <div className="aw-loading-overlay">
+          <video
+            src={loadingVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="aw-loading-video"
+          />
+          <p className="aw-loading-text">AI가 작품을 변환하고 있습니다...</p>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 

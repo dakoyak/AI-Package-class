@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API 진단 도구</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; }
+        .card { border: 1px solid #ddd; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; }
+        .error { color: red; background: #fee; padding: 1rem; border-radius: 4px; }
+        .success { color: green; background: #eef; padding: 1rem; border-radius: 4px; }
+        input, button { padding: 0.5rem; font-size: 1rem; }
+        input[type="text"] { width: 100%; box-sizing: border-box; margin-bottom: 0.5rem; }
+        pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Gemini API 진단 도구</h1>
+    <p>이 도구는 React 앱이나 환경 설정과 무관하게, 브라우저에서 직접 Gemini API를 테스트하여 문제를 찾습니다.</p>
+
+    <div class="card">
+        <h3>1. API 키 입력</h3>
+        <p>Google AI Studio에서 발급받은 API 키를 입력하세요.</p>
+        <input type="text" id="apiKey" placeholder="AIzaSy..." />
+        <button onclick="saveKey()">키 저장 (브라우저 메모리)</button>
+    </div>
+
+    <div class="card">
+        <h3>2. 모델 목록 조회 (ListModels)</h3>
+        <button onclick="testListModels()">모델 목록 가져오기</button>
+        <div id="listResult"></div>
+    </div>
+
+    <div class="card">
+        <h3>3. 텍스트 생성 테스트 (GenerateContent)</h3>
+        <p>모델: <input type="text" id="textModel" value="gemini-1.5-flash" style="width: 200px; display:inline-block;"></p>
+        <button onclick="testGenerate()">테스트 실행</button>
+        <div id="genResult"></div>
+    </div>
+
+    <script>
+        let apiKey = localStorage.getItem('gemini_debug_key') || '';
+        document.getElementById('apiKey').value = apiKey;
+
+        function saveKey() {
+            apiKey = document.getElementById('apiKey').value.trim();
+            localStorage.setItem('gemini_debug_key', apiKey);
+            alert('키가 저장되었습니다.');
+        }
+
+        async function testListModels() {
+            const resultDiv = document.getElementById('listResult');
+            resultDiv.innerHTML = '로딩 중...';
+            
+            if (!apiKey) {
+                resultDiv.innerHTML = '<div class="error">API 키를 먼저 입력해주세요.</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const models = data.models || [];
+                    const flash = models.find(m => m.name.includes('flash'));
+                    resultDiv.innerHTML = `<div class="success">
+                        <strong>연결 성공!</strong><br>
+                        발견된 모델 수: ${models.length}<br>
+                        Flash 모델 존재 여부: ${flash ? '✅ 있음 (' + flash.name + ')' : '❌ 없음'}<br>
+                        <details><summary>전체 모델 목록 보기</summary><pre>${JSON.stringify(models, null, 2)}</pre></details>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">API 오류 (${response.status}): ${JSON.stringify(data, null, 2)}</div>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">네트워크 오류: ${e.message}</div>`;
+            }
+        }
+
+        async function testGenerate() {
+            const resultDiv = document.getElementById('genResult');
+            const modelName = document.getElementById('textModel').value;
+            resultDiv.innerHTML = '생성 중...';
+
+            if (!apiKey) {
+                resultDiv.innerHTML = '<div class="error">API 키를 먼저 입력해주세요.</div>';
+                return;
+            }
+
+            try {
+                // Remove 'models/' prefix if user typed it, as we add it manually or use raw
+                const cleanModel = modelName.replace('models/', '');
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${apiKey}`;
+                
+                console.log('Requesting:', url);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: "Hello, are you working?" }] }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">
+                        <strong>생성 성공!</strong><br>
+                        응답: ${data.candidates?.[0]?.content?.parts?.[0]?.text || '텍스트 없음'}<br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">
+                        <strong>생성 실패 (${response.status})</strong><br>
+                        URL: ${url}<br>
+                        응답: <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">네트워크 오류: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

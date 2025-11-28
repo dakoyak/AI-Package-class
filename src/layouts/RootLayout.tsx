@@ -18,43 +18,41 @@ type NavigationItem = {
 const immersiveNavItems = [
   {
     path: ROUTES.immersive.history,
-    menuLabel: 'AI 역사 인터뷰',
-    summary: '세종대왕과 실시간 대화 체험',
+    menuLabel: "AI 역사 인터뷰",
+    summary: "세종대왕과 실시간 대화 체험",
   },
   {
     path: ROUTES.immersive.coach,
-    menuLabel: 'AI 체육 코치',
-    summary: '포즈 인식으로 운동 피드백 받기',
+    menuLabel: "AI 피트니스 코치",
+    summary: "포즈 인식으로 운동 피드백 받기",
   },
 ];
 
 const collaborationNavItems = [
   {
     path: ROUTES.collaboration.smartDiscussion,
-    menuLabel: '곰곰이 스마트 토론',
-    summary: '음성 인식으로 갈등을 중재하는 토론 수업',
+    menuLabel: "곰곰이 스마트 토론",
+    summary: "음성 인식으로 갈등을 중재하는 토론 수업",
   },
 ];
 
 const navItems: NavigationItem[] = [
-  { label: '홈', path: ROUTES.home },
+  { label: "홈", path: ROUTES.home },
   {
-    label: '창의력',
+    label: "창의력",
     path: ROUTES.creativity.root,
   },
-  { label: 'AI 리터러시', path: ROUTES.aiLiteracy.root },
+  { label: "AI 리터러시", path: ROUTES.aiLiteracy.root },
   {
-    label: '몰입형 체험',
+    label: "몰입형 체험",
     path: ROUTES.immersive.history,
-
   },
   {
-    label: '논리/협업',
+    label: "논리/협업",
     path: ROUTES.collaboration.smartDiscussion,
-
   },
-  { label: '나의활동 기록', path: ROUTES.dashboard.activityLog },
-  { label: '학급 게시판', path: ROUTES.dashboard.classBoard },
+  { label: "나의활동 기록", path: ROUTES.dashboard.activityLog },
+  { label: "학급 게시판", path: ROUTES.dashboard.classBoard },
 ];
 
 const notices = [
@@ -65,7 +63,6 @@ const notices = [
 
 function RootLayout() {
   const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0);
-  const location = useLocation();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -86,7 +83,6 @@ function RootLayout() {
 
         <div
           className={styles.noticeBar}
-          style={{ visibility: location.pathname === ROUTES.home ? 'visible' : 'hidden' }}
         >
           <div className={styles.noticeContent} key={currentNoticeIndex}>
             <p className={styles.noticeText}>
