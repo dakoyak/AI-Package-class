@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../routes/paths';
 import styles from './AuthHeader.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
@@ -74,27 +76,25 @@ const isLoginSuccessResponse = (value: LoginResponse): value is LoginSuccessResp
 };
 
 type SignupFormState = {
-    role: 'student' | 'teacher';
+    role: 'teacher'; // Only teacher signup allowed
     name: string;
     username: string;
     password: string;
     confirmPassword: string;
-    gender: '남' | '여';
-    grade: string;
-    classroom: string;
-    number: string;
+    teacher_code: string;
+    teacher_grade: string;
+    teacher_classroom: string;
 };
 
 const initialSignupForm: SignupFormState = {
-    role: 'student',
+    role: 'teacher',
     name: '',
     username: '',
     password: '',
     confirmPassword: '',
-    gender: '남',
-    grade: '',
-    classroom: '',
-    number: '',
+    teacher_code: '',
+    teacher_grade: '',
+    teacher_classroom: '',
 };
 
 const readStoredUser = (): LoggedInUser | null => {
@@ -155,6 +155,7 @@ function AuthHeader() {
         setPassword('');
         resetSignupForm();
         closeModal();
+        window.dispatchEvent(new Event('auth-change'));
         alert(payload.message);
     }, []);
 
@@ -186,7 +187,7 @@ function AuthHeader() {
     };
 
     const handleSignup = async () => {
-        const { role, name, username: signupUsername, password: signupPassword, confirmPassword, gender, grade, classroom, number } = signupForm;
+        const { role, name, username: signupUsername, password: signupPassword, confirmPassword, teacher_code, teacher_grade, teacher_classroom } = signupForm;
 
         if (signupPassword !== confirmPassword) {
             alert('비밀번호가 일치하지 않습니다.');
@@ -198,8 +199,8 @@ function AuthHeader() {
             return;
         }
 
-        if (role === 'student' && (!gender || !grade || !classroom || !number)) {
-            alert('학생 가입 시 학년/반/번호와 성별을 입력해주세요.');
+        if (!teacher_code) {
+            alert('교직원 코드를 입력해주세요.');
             return;
         }
 
@@ -208,14 +209,11 @@ function AuthHeader() {
             name,
             username: signupUsername,
             password: signupPassword,
+            teacher_code,
         };
 
-        if (role === 'student') {
-            payload.gender = gender;
-            payload.grade = grade;
-            payload.classroom = classroom;
-            payload.number = number;
-        }
+        if (teacher_grade) payload.teacher_grade = teacher_grade;
+        if (teacher_classroom) payload.teacher_classroom = teacher_classroom;
 
         try {
             const response = await postJson(`${API_BASE_URL}/api/signup`, payload);
@@ -229,6 +227,7 @@ function AuthHeader() {
     const handleLogout = () => {
         setLoggedInUser(null);
         localStorage.removeItem('loggedInUser');
+        window.dispatchEvent(new Event('auth-change'));
         alert('로그아웃되었습니다.');
     };
 
@@ -290,17 +289,6 @@ function AuthHeader() {
 
     const renderSignupFields = () => (
         <>
-            <select
-                className={styles.modalInput}
-                value={signupForm.role}
-                onChange={(event) =>
-                    setSignupForm((prev) => ({ ...prev, role: event.target.value as SignupFormState['role'] }))
-                }
-            >
-                <option value="student">학생</option>
-                <option value="teacher">교사</option>
-            </select>
-
             <input
                 type="text"
                 placeholder="이름"
@@ -308,48 +296,29 @@ function AuthHeader() {
                 value={signupForm.name}
                 onChange={(event) => setSignupForm((prev) => ({ ...prev, name: event.target.value }))}
             />
-
-            {signupForm.role === 'student' && (
-                <>
-                    <select
-                        className={styles.modalInput}
-                        value={signupForm.gender}
-                        onChange={(event) =>
-                            setSignupForm((prev) => ({ ...prev, gender: event.target.value as '남' | '여' }))
-                        }
-                    >
-                        <option value="남">남학생</option>
-                        <option value="여">여학생</option>
-                    </select>
-
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <input
-                            type="text"
-                            placeholder="학년"
-                            className={styles.modalInput}
-                            value={signupForm.grade}
-                            onChange={(event) => setSignupForm((prev) => ({ ...prev, grade: event.target.value }))}
-                        />
-                        <input
-                            type="text"
-                            placeholder="반"
-                            className={styles.modalInput}
-                            value={signupForm.classroom}
-                            onChange={(event) =>
-                                setSignupForm((prev) => ({ ...prev, classroom: event.target.value }))
-                            }
-                        />
-                        <input
-                            type="text"
-                            placeholder="번호"
-                            className={styles.modalInput}
-                            value={signupForm.number}
-                            onChange={(event) => setSignupForm((prev) => ({ ...prev, number: event.target.value }))}
-                        />
-                    </div>
-                </>
-            )}
-
+            <input
+                type="text"
+                placeholder="교직원 코드 (데모: 아무 값이나 입력)"
+                className={styles.modalInput}
+                value={signupForm.teacher_code}
+                onChange={(event) => setSignupForm((prev) => ({ ...prev, teacher_code: event.target.value }))}
+            />
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                    type="text"
+                    placeholder="담당 학년"
+                    className={styles.modalInput}
+                    value={signupForm.teacher_grade}
+                    onChange={(event) => setSignupForm((prev) => ({ ...prev, teacher_grade: event.target.value }))}
+                />
+                <input
+                    type="text"
+                    placeholder="담당 반"
+                    className={styles.modalInput}
+                    value={signupForm.teacher_classroom}
+                    onChange={(event) => setSignupForm((prev) => ({ ...prev, teacher_classroom: event.target.value }))}
+                />
+            </div>
             <input
                 type="text"
                 placeholder="아이디"
@@ -392,7 +361,7 @@ function AuthHeader() {
                 <div className={styles.modalBackdrop} onClick={closeModal}>
                     <div className={styles.modalContent} onClick={(event) => event.stopPropagation()}>
                         <div className={styles.modalHeader}>
-                            <h2>{authMode === 'login' ? 'AI 창의력 수업' : '회원가입'}</h2>
+                            <h2>{authMode === 'login' ? 'AI 창의력 수업' : '교사 회원가입'}</h2>
                             <button onClick={closeModal} className={styles.closeButton}>
                                 &times;
                             </button>

@@ -18,11 +18,27 @@ function SparringLab() {
     setError('');
     setOutput(''); // Clear previous output
     try {
-      const text = await requestSparringScenario({ classicStory, twist, focus });
-      setOutput(text);
+      await requestSparringScenario(
+        { classicStory, twist, focus },
+        (streamedText) => {
+          setOutput(streamedText);
+          // 스트리밍 시작되면 로딩 상태 해제 (비디오 숨기고 텍스트 보여주기 위함)
+          // 하지만 여기서는 비디오 오버레이가 'loading' 상태에 의존하므로,
+          // 첫 데이터가 들어오면 loading을 false로 바꿔야 오버레이가 사라지고 텍스트가 보임.
+          // 다만 비디오를 조금 더 보여주고 싶다면 로직 조정 필요.
+          // 여기서는 즉각적인 반응을 위해 첫 청크 수신 시 loading을 false로 변경하는 로직을 추가할 수도 있으나,
+          // React state update batching 등을 고려하여, 
+          // loading 상태는 '생성 중'이 아니라 '생성 시작 전 대기' 의미로 쓰고,
+          // 생성 중일 때는 output이 있으므로 화면에 텍스트가 보이게 처리하는 것이 좋음.
+
+          // 간단하게: 첫 텍스트가 들어오면 loading을 false로 설정.
+          setLoading(false);
+        }
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : '생성 중 오류가 발생했습니다.';
       setError(message);
+      setLoading(false); // 에러 시에도 로딩 해제
     } finally {
       setLoading(false);
     }
@@ -36,7 +52,6 @@ function SparringLab() {
   return (
     <section className={styles.panel}>
       <header className={styles.header}>
-        <p className={styles.label}>상상 스파링</p>
         <h3 className={styles.title}>AI 스파링 파트너</h3>
         <p className={styles.desc}>AI가 엉뚱한 반론을 던져 이야기 재구성을 돕습니다.</p>
       </header>

@@ -2,14 +2,15 @@
 
 .wrapper {
   position: relative;
-  width: 100%;
+  width: 80%;
   height: 100%;
+  margin: 0 auto;
   background: linear-gradient(to bottom, #f5e6d3 0%, #e8d4b8 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 40px 50px;
   box-sizing: border-box;
   border-radius: 24px;
 }
@@ -55,11 +56,64 @@
   }
 }
 
+/* Loading Overlay */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
 
+.loadingVideo {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(139, 90, 43, 0.3);
+  margin-bottom: 1.5rem;
+}
 
+.loadingText {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s infinite;
+}
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.7;
+  }
+}
 
 .layout {
   position: relative;
@@ -243,16 +297,11 @@
   position: relative;
 }
 
-
-
 .portalContainer {
   position: relative;
   width: 280px;
   height: 360px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1000px;
 }
 
 /* 책 장식 - 리본 */
@@ -292,8 +341,6 @@
   transition: all 0.5s ease;
   overflow: hidden;
 }
-
-
 
 /* 책 제목 영역 */
 .portal::after {
@@ -718,6 +765,7 @@
 
   .bearImage {
     width: 100px;
+    height: 100px;
   }
 
   .buttonRow {

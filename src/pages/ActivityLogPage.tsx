@@ -60,13 +60,15 @@ export const ActivityLogPage = () => {
           {categories.map((category) => (
             <div key={category} className={styles.groupCard}>
               <p className={styles.groupTitle}>{category}</p>
-              {grouped[category].map((entry) => (
-                <article key={entry.id} className={styles.entryItem}>
-                  <p className={styles.entryTitle}>{entry.label}</p>
-                  <p className={styles.entryDetail}>{entry.detail}</p>
-                  <p className={styles.entryTime}>{formatTime(entry.timestamp)}</p>
-                </article>
-              ))}
+              <div className={styles.scrollContainer}>
+                {grouped[category].map((entry) => (
+                  <article key={entry.id} className={styles.entryItem}>
+                    <p className={styles.entryTitle}>{entry.label}</p>
+                    <p className={styles.entryDetail}>{entry.detail}</p>
+                    <p className={styles.entryTime}>{formatTime(entry.timestamp)}</p>
+                  </article>
+                ))}
+              </div>
             </div>
           ))}
         </div>

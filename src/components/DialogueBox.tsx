@@ -8,6 +8,7 @@ interface DialogueBoxProps {
   showNext?: boolean;
   onPrev?: () => void;
   showPrev?: boolean;
+  isFullscreen?: boolean;
 }
 
 const fadeIn = keyframes`
@@ -21,78 +22,61 @@ const fadeIn = keyframes`
   }
 `;
 
-const bounce = keyframes`
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-`;
-
-const Container = styled.div`
+const Container = styled.div<{ $isFullscreen?: boolean }>`
   position: relative;
   width: 100%;
-  max-width: 900px;
+  max-width: ${({ $isFullscreen }) => $isFullscreen ? '1000px' : '800px'};
   margin: 0 auto;
   animation: ${fadeIn} 0.3s ease-out;
+  transition: max-width 0.3s ease;
 `;
 
-const DialogueWindow = styled.div`
+const DialogueWindow = styled.div<{ $isFullscreen?: boolean }>`
   background: white;
   border: 4px solid #2c3e50;
   border-radius: 16px;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme, $isFullscreen }) => $isFullscreen ? theme.spacing.xl : theme.spacing.lg};
+  padding-top: ${({ theme, $isFullscreen }) => $isFullscreen ? theme.spacing.xxl : theme.spacing.xl};
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   position: relative;
-  min-height: 150px;
+  min-height: ${({ $isFullscreen }) => $isFullscreen ? '180px' : '120px'};
+  transition: all 0.3s ease;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: ${({ theme }) => theme.spacing.lg};
-    min-height: 120px;
+    padding: ${({ theme }) => theme.spacing.md};
+    padding-top: ${({ theme }) => theme.spacing.xl};
+    min-height: 100px;
     border: 3px solid #2c3e50;
-  }
-  
-  @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
-    min-height: 200px;
-    padding: ${({ theme }) => theme.spacing.xxl};
   }
 `;
 
-const CharacterName = styled.div<{ $character: 'kkoma' | 'banjjak' }>`
+const CharacterName = styled.div<{ $character: 'kkoma' | 'banjjak'; $isFullscreen?: boolean }>`
   position: absolute;
-  top: -20px;
+  top: -25px;
   ${({ $character }) => $character === 'kkoma' ? 'left: 30px;' : 'right: 30px;'}
   background: ${({ $character }) => $character === 'kkoma' ? '#FFD700' : '#FF69B4'};
   color: white;
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme, $isFullscreen }) => $isFullscreen ? `${theme.spacing.md} ${theme.spacing.xl}` : `${theme.spacing.sm} ${theme.spacing.lg}`};
   border-radius: 20px;
   font-weight: 700;
-  font-size: ${({ theme }) => theme.fonts.sizes.medium};
+  font-size: ${({ theme, $isFullscreen }) => $isFullscreen ? theme.fonts.sizes.large : theme.fonts.sizes.medium};
   border: 3px solid #2c3e50;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  
-  @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
-    font-size: ${({ theme }) => theme.fonts.sizes.large};
-    padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
-  }
+  transition: all 0.3s ease;
+  z-index: 2;
 `;
 
-const DialogueText = styled.p`
+const DialogueText = styled.p<{ $isFullscreen?: boolean }>`
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.fonts.sizes.large};
-  line-height: 1.8;
+  font-size: ${({ theme, $isFullscreen }) => $isFullscreen ? theme.fonts.sizes.xlarge : theme.fonts.sizes.large};
+  line-height: ${({ $isFullscreen }) => $isFullscreen ? 2 : 1.8};
   margin: 0;
   white-space: pre-wrap;
+  transition: all 0.3s ease;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     font-size: ${({ theme }) => theme.fonts.sizes.medium};
     line-height: 1.6;
-  }
-  
-  @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
-    font-size: ${({ theme }) => theme.fonts.sizes.xlarge};
-    line-height: 2;
   }
 `;
 
@@ -154,7 +138,8 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
   onNext,
   showNext = true,
   onPrev,
-  showPrev = false
+  showPrev = false,
+  isFullscreen = false
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
@@ -200,28 +185,28 @@ export const DialogueBox: React.FC<DialogueBoxProps> = ({
   };
 
   return (
-    <Container>
-      <DialogueWindow onClick={handleClick}>
-        <CharacterName $character={character}>
+    <Container $isFullscreen={isFullscreen}>
+      <DialogueWindow onClick={handleClick} $isFullscreen={isFullscreen}>
+        <CharacterName $character={character} $isFullscreen={isFullscreen}>
           {characterName}
         </CharacterName>
-        <DialogueText>{displayedText}</DialogueText>
+        <DialogueText $isFullscreen={isFullscreen}>{displayedText}</DialogueText>
         <ClickOverlay onClick={handleClick} />
       </DialogueWindow>
-      
+
       {(showPrev || showNext) && isComplete && (
         <ButtonGroup>
-          <StyledNavButton 
-            $type="prev" 
+          <StyledNavButton
+            $type="prev"
             onClick={handlePrevClick}
             disabled={!showPrev}
             style={{ visibility: showPrev ? 'visible' : 'hidden' }}
           >
             ◀ 이전
           </StyledNavButton>
-          
-          <StyledNavButton 
-            $type="next" 
+
+          <StyledNavButton
+            $type="next"
             onClick={handleNextClick}
             disabled={!showNext}
             style={{ visibility: showNext ? 'visible' : 'hidden' }}

@@ -55,21 +55,62 @@ const navItems: NavigationItem[] = [
   { label: "학급 게시판", path: ROUTES.dashboard.classBoard },
 ];
 
-const notices = [
-  "오늘의 알림: 상상 스파링으로 친구와 아이디어 라운드를 시작해 보세요! 💡",
-  "🎉 3학년 2반 11번 이평안 오늘 생일! 축하합니다! 🎂",
-  "📢 다음 주 월요일은 개교기념일입니다. 학교에 오지 마세요! 🏫",
-];
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
+
+type Notice = {
+  id: number;
+  content: string;
+  created_at: string;
+};
 
 function RootLayout() {
+  const [notices, setNotices] = useState<Notice[]>([]);
   const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0);
 
   useEffect(() => {
+    fetchNotices();
+  }, []);
+
+  const fetchNotices = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/notices`);
+      const data = await response.json();
+      setNotices(data);
+    } catch (error) {
+      console.error('Error fetching notices:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (notices.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentNoticeIndex((prev) => (prev + 1) % notices.length);
     }, 3000); // 3초마다 변경
 
     return () => clearInterval(interval);
+  }, [notices]);
+
+  const [isTeacher, setIsTeacher] = useState(false);
+
+  const checkUserRole = () => {
+    const storedUser = localStorage.getItem('loggedInUser');
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        setIsTeacher(parsed.type === 'teacher');
+      } catch {
+        setIsTeacher(false);
+      }
+    } else {
+      setIsTeacher(false);
+    }
+  };
+
+  useEffect(() => {
+    checkUserRole();
+    window.addEventListener('auth-change', checkUserRole);
+    return () => window.removeEventListener('auth-change', checkUserRole);
   }, []);
 
   return (
@@ -81,15 +122,19 @@ function RootLayout() {
           </div>
         </NavLink>
 
-        <div
-          className={styles.noticeBar}
-        >
+        <div className={styles.noticeBar}>
           <div className={styles.noticeContent} key={currentNoticeIndex}>
             <p className={styles.noticeText}>
-              {notices[currentNoticeIndex]}
+              {notices.length > 0 ? notices[currentNoticeIndex].content : "등록된 공지사항이 없습니다."}
             </p>
           </div>
         </div>
+
+        {isTeacher && (
+          <NavLink to={ROUTES.dashboard.teacherAdmin} className={styles.adminButton}>
+            관리
+          </NavLink>
+        )}
 
         <AuthHeader />
       </header>

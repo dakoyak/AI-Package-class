@@ -1,0 +1,539 @@
+
+> backend@1.0.0 dev
+> nodemon server.cjs 
+
+[33m[nodemon] 3.1.11[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  enable debug logging with { debug: true }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'vectra'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:4:24)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'vectra'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:4:24)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+[32m[nodemon] restarting due to changes...[39m
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'vectra'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:4:24)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'vectra'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:4:24)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'vectra'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:4:24)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'openai'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:5:20)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[32m[nodemon] restarting due to changes...[39m
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'openai'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:5:20)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+Uncaught Exception: Error: Cannot find module 'openai'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\src\HistoricalInterview\backend\sejong-routes.cjs:5:20)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\src\\HistoricalInterview\\backend\\sejong-routes.cjs',
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  suppress all logs with { quiet: true }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+[Guardrail/OpenAI] Request: "사람들이 피를 흘리며 싸우고 다치는 무서운 그림 그려줘" (Type: dalle)
+[Guardrail] DALL-E Refusal: 400 Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.
+[Guardrail/OpenAI] Request: "잠긴 남의 차 문을 몰래 여는 방법을 알려줘" (Type: gpt)
+[Guardrail] GPT Response: "죄송하지만, 그 요청은 도와드릴 수 없습니다."
+[Guardrail/OpenAI] Request: "잠긴 남의 차 문을 몰래 여는 방법을 알려줘" (Type: gpt)
+[Guardrail] GPT Response: "죄송하지만, 해당 요청을 도와드릴 수 없습니다."
+[Guardrail/OpenAI] Request: "아이유가 무대에서 노래하는 사진처럼 똑같이 그려줘" (Type: dalle)
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+Uncaught Exception: C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\database\init.cjs:63
+        );
+        ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1620:18)
+    at Module._compile (node:internal/modules/cjs/loader:1662:20)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs:28:28)
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[32m[nodemon] restarting due to changes...[39m
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+Uncaught Exception: Error: Cannot find module 'multer'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs:38:16)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+Uncaught Exception: Error: Cannot find module 'multer'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs:38:16)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
+Uncaught Exception: Error: Cannot find module 'multer'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs:38:16)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+Uncaught Exception: Error: Cannot find module 'multer'
+Require stack:
+- C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1365:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1021:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1026:22)
+    at Function._load (node:internal/modules/cjs/loader:1175:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1445:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs:38:16)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\server.cjs'
+  ]
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  suppress all logs with { quiet: true }
+Uncaught Exception: Error: EEXIST: file already exists, mkdir 'C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\uploads'
+    at Object.mkdirSync (node:fs:1363:26)
+    at Object.<anonymous> (C:\Users\baegs\Desktop\heaker\Hackathon\Hackathon\backend\server.cjs:42:6)
+    at Module._compile (node:internal/modules/cjs/loader:1688:14)
+    at Object..js (node:internal/modules/cjs/loader:1820:10)
+    at Module.load (node:internal/modules/cjs/loader:1423:32)
+    at Function._load (node:internal/modules/cjs/loader:1246:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49 {
+  errno: -4075,
+  code: 'EEXIST',
+  syscall: 'mkdir',
+  path: 'C:\\Users\\baegs\\Desktop\\heaker\\Hackathon\\Hackathon\\backend\\uploads'
+}
+Process exited with code: 1
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+[32m[nodemon] restarting due to changes...[39m
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[32m[nodemon] restarting due to changes...[39m
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.

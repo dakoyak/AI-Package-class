@@ -39,6 +39,8 @@
 }
 
 .moduleNav {
+  width: 80%;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
@@ -79,6 +81,8 @@
 }
 
 .moduleArea {
+  width: 80%;
+  margin: 0 auto;
   margin-top: 1.5rem;
   padding: 2rem;
   border-radius: 28px;

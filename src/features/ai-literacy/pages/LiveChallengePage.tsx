@@ -207,6 +207,43 @@ const NextCaseButton = styled.button`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.md};
+  justify-content: center;
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  flex-wrap: wrap;
+  width: 100%;
+`;
+
+const SwitchMissionButton = styled.button`
+  background: #6C5CE7;
+  color: white;
+  font-size: ${({ theme }) => theme.fonts.sizes.large};
+  font-weight: 700;
+  padding: ${({ theme }) => theme.spacing.lg} ${({ theme }) => theme.spacing.xl};
+  border-radius: 20px;
+  border: 4px solid #2c3e50;
+  box-shadow: 0 8px 0 #2c3e50, 0 12px 24px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 0 #2c3e50, 0 16px 32px rgba(0, 0, 0, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #2c3e50, 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+  
+  @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
+    font-size: ${({ theme }) => theme.fonts.sizes.xlarge};
+    padding: ${({ theme }) => theme.spacing.xl} 60px;
+  }
+`;
+
 const ResultSection = styled.div`
   width: 100%;
   background: white;
@@ -424,6 +461,15 @@ export const LiveChallengePage: React.FC = () => {
     navigate(ROUTES.aiLiteracy.mission(resolvedMissionType));
   };
 
+  const handleSwitchMission = () => {
+    playClickSound();
+    if (resolvedMissionType === 'bias') {
+      navigate(ROUTES.aiLiteracy.mission('guardrail'));
+    } else {
+      navigate(ROUTES.aiLiteracy.mission('bias'));
+    }
+  };
+
   const handleNext = () => {
     playClickSound();
     if (currentDialogue < dialogues.length - 1) {
@@ -461,7 +507,7 @@ export const LiveChallengePage: React.FC = () => {
         setGuardrailResponse(response);
         setIsLoading(false);
         setShowResults(true);
-        
+
         if (response.status === 'rejected' || response.status === 'success') {
           playResultSound();
         } else {
@@ -512,14 +558,14 @@ export const LiveChallengePage: React.FC = () => {
             <CharactersContainer>
               {currentDialogueData.character === 'kkoma' ? (
                 <>
-                  <CharacterSprite 
-                    character="kkoma" 
+                  <CharacterSprite
+                    character="kkoma"
                     emotion={currentDialogueData.emotion}
                     position="left"
                     size="large"
                   />
-                  <CharacterSprite 
-                    character="banjjak" 
+                  <CharacterSprite
+                    character="banjjak"
                     emotion="guess"
                     position="right"
                     size="medium"
@@ -527,14 +573,14 @@ export const LiveChallengePage: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <CharacterSprite 
-                    character="kkoma" 
+                  <CharacterSprite
+                    character="kkoma"
                     emotion="guess"
                     position="left"
                     size="medium"
                   />
-                  <CharacterSprite 
-                    character="banjjak" 
+                  <CharacterSprite
+                    character="banjjak"
                     emotion={currentDialogueData.emotion}
                     position="right"
                     size="large"
@@ -542,7 +588,7 @@ export const LiveChallengePage: React.FC = () => {
                 </>
               )}
             </CharactersContainer>
-            
+
             <DialogueContainer>
               <DialogueBox
                 character={currentDialogueData.character}
@@ -557,14 +603,14 @@ export const LiveChallengePage: React.FC = () => {
         ) : (
           <>
             <CharactersContainer>
-              <CharacterSprite 
-                character="kkoma" 
+              <CharacterSprite
+                character="kkoma"
                 emotion={getKkomaEmotion()}
                 position="left"
                 size="medium"
               />
-              <CharacterSprite 
-                character="banjjak" 
+              <CharacterSprite
+                character="banjjak"
                 emotion={getBanjjakEmotion()}
                 position="right"
                 size="medium"
@@ -596,7 +642,7 @@ export const LiveChallengePage: React.FC = () => {
                 <ResultSection>
                   <ResultGrid images={biasData.results} columns={3} />
                 </ResultSection>
-                
+
                 <DiscussionSection>
                   <DiscussionTitle>🤔 함께 생각해봐요</DiscussionTitle>
                   <DiscussionText>{biasData.discussionPrompt}</DiscussionText>
@@ -604,10 +650,15 @@ export const LiveChallengePage: React.FC = () => {
                     <p>{biasData.learningPoint}</p>
                   </LearningPoint>
                 </DiscussionSection>
-                
-                <NextCaseButton onClick={handleNextCase}>
-                  🔍 다른 케이스 보기
-                </NextCaseButton>
+
+                <ButtonContainer>
+                  <NextCaseButton onClick={handleNextCase} style={{ marginTop: 0 }}>
+                    🔍 다른 케이스 보기
+                  </NextCaseButton>
+                  <SwitchMissionButton onClick={handleSwitchMission}>
+                    🛡️ 미션 2 보러가기
+                  </SwitchMissionButton>
+                </ButtonContainer>
               </>
             )}
 
@@ -622,7 +673,7 @@ export const LiveChallengePage: React.FC = () => {
                         <RejectionReason>{guardrailResponse.reason}</RejectionReason>
                       </RejectionDisplay>
                     </ResultSection>
-                    
+
                     <DiscussionSection>
                       <DiscussionTitle>🤔 함께 생각해봐요</DiscussionTitle>
                       <DiscussionText>{guardrailData.discussionPrompt}</DiscussionText>
@@ -630,10 +681,15 @@ export const LiveChallengePage: React.FC = () => {
                         <p>{guardrailData.learningPoint}</p>
                       </LearningPoint>
                     </DiscussionSection>
-                    
-                    <NextCaseButton onClick={handleNextCase}>
-                      🛡️ 다른 케이스 보기
-                    </NextCaseButton>
+
+                    <ButtonContainer>
+                      <NextCaseButton onClick={handleNextCase} style={{ marginTop: 0 }}>
+                        🛡️ 다른 케이스 보기
+                      </NextCaseButton>
+                      <SwitchMissionButton onClick={handleSwitchMission}>
+                        🔍 미션 1 보러가기
+                      </SwitchMissionButton>
+                    </ButtonContainer>
                   </>
                 ) : guardrailResponse.status === 'success' ? (
                   <>
@@ -644,17 +700,22 @@ export const LiveChallengePage: React.FC = () => {
                         <DiscussionText>{guardrailResponse.data.content}</DiscussionText>
                       )}
                     </ResultSection>
-                    
+
                     <DiscussionSection>
                       <DiscussionTitle>🤔 함께 생각해봐요</DiscussionTitle>
                       <DiscussionText>
                         이번에는 AI가 요청을 수락했어요. 왜 이 요청은 괜찮았을까요?
                       </DiscussionText>
                     </DiscussionSection>
-                    
-                    <NextCaseButton onClick={handleNextCase}>
-                      🛡️ 다른 케이스 보기
-                    </NextCaseButton>
+
+                    <ButtonContainer>
+                      <NextCaseButton onClick={handleNextCase} style={{ marginTop: 0 }}>
+                        🛡️ 다른 케이스 보기
+                      </NextCaseButton>
+                      <SwitchMissionButton onClick={handleSwitchMission}>
+                        🔍 미션 1 보러가기
+                      </SwitchMissionButton>
+                    </ButtonContainer>
                   </>
                 ) : (
                   <ResultSection>

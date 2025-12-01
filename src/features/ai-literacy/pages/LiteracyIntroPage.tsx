@@ -10,40 +10,49 @@ import { ToggleFullscreenButton } from '../../../shared/ToggleFullscreenButton';
 import { useAiLiteracyFullscreen } from '../AiLiteracyFullscreenContext';
 
 const PageContainer = styled.div<{ $isModuleFullscreen: boolean }>`
-  min-height: 100vh;
+  width: 80%;
+  height: 100%;
+  margin: 0 auto;
   background-image: url('/images/backgrounds/ai-detective-office-bg.png');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => theme.spacing.lg};
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
   
   ${({ $isModuleFullscreen }) => $isModuleFullscreen && `
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 999; /* 다른 요소들 위에 오도록 */
-    padding: 0; /* 전체화면 시 패딩 제거 */
-    overflow: auto; /* 내용이 많아지면 스크롤 가능하게 */
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    padding: 0;
+    border-radius: 0;
+    margin: 0;
+    overflow: auto;
   `}
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     padding: ${({ theme }) => theme.spacing.md};
     justify-content: flex-start;
     padding-top: ${({ theme }) => theme.spacing.xl};
+    width: 95%; /* 모바일에서는 더 넓게 */
   }
 `;
 
 const Overlay = styled.div`
   position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: auto;
   top: 0;
   left: 0;
   right: 0;
@@ -56,7 +65,7 @@ const Content = styled.div`
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1200px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,7 +75,7 @@ const Content = styled.div`
 
 const Title = styled.h1`
   color: white;
-  font-size: 48px;
+  font-size: 40px;
   font-weight: 900;
   text-align: center;
   text-shadow: 
@@ -90,31 +99,28 @@ const Title = styled.h1`
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: 32px;
+    font-size: 28px;
   }
   
   @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
-    font-size: 80px;
+    font-size: 70px;
   }
 `;
 
-const CharactersContainer = styled.div`
+const CharactersContainer = styled.div<{ $isModuleFullscreen: boolean }>`
   position: relative;
   width: 100%;
-  height: 280px;
+  height: ${({ $isModuleFullscreen }) => $isModuleFullscreen ? '350px' : '220px'};
   display: flex;
   align-items: flex-end;
   justify-content: center;
   margin-top: ${({ theme }) => theme.spacing.sm};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   flex-shrink: 0;
+  transition: height 0.3s ease;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    height: 200px;
-  }
-  
-  @media (min-width: ${({ theme }) => theme.breakpoints.tv}) {
-    height: 400px;
+    height: 160px;
   }
 `;
 
@@ -136,7 +142,7 @@ const MissionButton = styled.button<{ $color: string }>`
   color: white;
   font-size: ${({ theme }) => theme.fonts.sizes.large};
   font-weight: 700;
-  padding: ${({ theme }) => theme.spacing.lg} ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.xs};
   border-radius: 20px;
   border: 4px solid #2c3e50;
   box-shadow: 0 8px 0 #2c3e50, 0 12px 24px rgba(0, 0, 0, 0.3);
@@ -148,7 +154,7 @@ const MissionButton = styled.button<{ $color: string }>`
     transform: translateY(-4px);
     box-shadow: 0 12px 0 #2c3e50, 0 16px 32px rgba(0, 0, 0, 0.4);
   }
-  
+   
   &:active {
     transform: translateY(4px);
     box-shadow: 0 4px 0 #2c3e50, 0 8px 16px rgba(0, 0, 0, 0.3);
@@ -196,7 +202,7 @@ export const LiteracyIntroPage: React.FC = () => {
   const [showMissionSelect, setShowMissionSelect] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
   const [selectedMission, setSelectedMission] = useState<'bias' | 'guardrail' | null>(null);
-  const { isModuleFullscreen, toggleModuleFullscreen } = useAiLiteracyFullscreen();
+  const { isModuleFullscreen } = useAiLiteracyFullscreen();
 
   const handleNext = () => {
     playClickSound();
@@ -232,23 +238,23 @@ export const LiteracyIntroPage: React.FC = () => {
     <PageContainer $isModuleFullscreen={isModuleFullscreen}>
       <Overlay />
       {showTransition && <MissionTransition onComplete={handleTransitionComplete} />}
-      <ToggleFullscreenButton isExpanded={isModuleFullscreen} onClick={toggleModuleFullscreen} />
+      <ToggleFullscreenButton />
       <Content>
         <Title>AI 탐정단 본부</Title>
-        
+
         {!showMissionSelect ? (
           <>
-            <CharactersContainer>
+            <CharactersContainer $isModuleFullscreen={isModuleFullscreen}>
               {currentDialogueData.character === 'kkoma' ? (
                 <>
-                  <CharacterSprite 
-                    character="kkoma" 
+                  <CharacterSprite
+                    character="kkoma"
                     emotion={currentDialogueData.emotion}
                     position="left"
                     size="large"
                   />
-                  <CharacterSprite 
-                    character="banjjak" 
+                  <CharacterSprite
+                    character="banjjak"
                     emotion="curious"
                     position="right"
                     size="medium"
@@ -256,14 +262,14 @@ export const LiteracyIntroPage: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <CharacterSprite 
-                    character="kkoma" 
+                  <CharacterSprite
+                    character="kkoma"
                     emotion="guess"
                     position="left"
                     size="medium"
                   />
-                  <CharacterSprite 
-                    character="banjjak" 
+                  <CharacterSprite
+                    character="banjjak"
                     emotion={currentDialogueData.emotion}
                     position="right"
                     size="large"
@@ -271,7 +277,7 @@ export const LiteracyIntroPage: React.FC = () => {
                 </>
               )}
             </CharactersContainer>
-            
+
             <DialogueContainer>
               <DialogueBox
                 character={currentDialogueData.character}
@@ -280,34 +286,35 @@ export const LiteracyIntroPage: React.FC = () => {
                 showNext={true}
                 onPrev={handlePrev}
                 showPrev={currentDialogue > 0}
+                isFullscreen={isModuleFullscreen}
               />
             </DialogueContainer>
           </>
         ) : (
           <>
-            <CharactersContainer>
-              <CharacterSprite 
-                character="kkoma" 
+            <CharactersContainer $isModuleFullscreen={isModuleFullscreen}>
+              <CharacterSprite
+                character="kkoma"
                 emotion="original"
                 position="left"
                 size="large"
               />
-              <CharacterSprite 
-                character="banjjak" 
+              <CharacterSprite
+                character="banjjak"
                 emotion="original"
                 position="right"
                 size="large"
               />
             </CharactersContainer>
-            
+
             <MissionSelectContainer>
-              <MissionButton 
+              <MissionButton
                 $color="#FF6B6B"
                 onClick={() => handleMissionSelect('bias')}
               >
                 미션 1: 편견 찾기
               </MissionButton>
-              <MissionButton 
+              <MissionButton
                 $color="#4ECDC4"
                 onClick={() => handleMissionSelect('guardrail')}
               >

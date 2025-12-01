@@ -97,3 +97,25 @@
   background: #e8e8e800;
   border-radius: 16px;
 }
+
+.adminButton {
+  color: white;
+  text-decoration: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  white-space: nowrap;
+}
+
+.adminButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 6px rgba(255, 255, 255, 0.3);
+  color: white;
+
+}

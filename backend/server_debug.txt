@@ -1,0 +1,9 @@
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.

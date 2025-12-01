@@ -21,11 +21,17 @@ function WritingAtelier() {
     setError('');
     setOutput(''); // Clear previous output
     try {
-      const text = await requestWritingGuide({ grade, theme, genre });
-      setOutput(text);
+      await requestWritingGuide(
+        { grade, theme, genre },
+        (streamedText) => {
+          setOutput(streamedText);
+          setLoading(false); // 첫 데이터 수신 시 로딩 해제하여 텍스트 표시
+        }
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : '글쓰기 가이드를 가져오지 못했습니다.';
       setError(message);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -39,7 +45,6 @@ function WritingAtelier() {
   return (
     <section className={styles.panel}>
       <header className={styles.header}>
-        <p className={styles.label}>AI 글쓰기 듀오</p>
         <h3 className={styles.title}>AI 글쓰기 듀오</h3>
         <p className={styles.desc}>학년/장르를 지정하면 AI가 글쓰기 활동지 초안을 제안합니다.</p>
       </header>

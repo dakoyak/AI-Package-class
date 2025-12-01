@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { spawn } = require("child_process");
-const SimpleVectorDB = require("../../../backend/utils/simpleVectorDB");
+const SimpleVectorDB = require("../utils/simpleVectorDB");
 const { OpenAI } = require("openai");
 
 // Sejong persona prompt
@@ -16,7 +16,7 @@ const sejongPersonaPrompt = `
 `;
 
 // Initialize Vector DB and OpenAI
-const VECTOR_DB_PATH = path.resolve(__dirname, "../../../backend/vector_db");
+const VECTOR_DB_PATH = path.resolve(__dirname, "../vector_db");
 const db = new SimpleVectorDB();
 db.createIndex(VECTOR_DB_PATH); // Load index
 
@@ -105,17 +105,12 @@ ${retrievedContext || "관련 자료 없음."}
 
     const timestamp = Date.now();
     const outputFileName = `tts_${timestamp}.mp3`;
-    const backendDir = path.resolve(__dirname, "../../../backend");
+    const backendDir = path.resolve(__dirname, "..");
     const outputPath = path.join(backendDir, outputFileName);
-    const ttsScriptPath = path.join(__dirname, "tts.py");
+    const ttsScriptPath = path.join(__dirname, "../utils/tts.py");
 
     // Spawn python process to generate audio
-    // Pass text via stdin to avoid encoding issues on Windows
-    const pythonProcess = spawn("python", [ttsScriptPath, outputPath]);
-
-    // Write text to stdin
-    pythonProcess.stdin.write(text);
-    pythonProcess.stdin.end();
+    const pythonProcess = spawn("python", [ttsScriptPath, text, outputPath]);
 
     pythonProcess.on("close", (code) => {
       if (code !== 0) {

@@ -3,11 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Fredoka:wght@300;400;600&display=swap');
 
 .coach-page-container {
-  width: 100%;
-  height: 100vh; /* 전체 화면 높이 */
-  margin: 0; /* 여백 제거 */
-  background-color: #1a0b2e; 
-  position: fixed; /* 스크롤 방지 */
+  width: 80%;
+  height: 100%;
+  /* 전체 화면 높이 */
+  margin: 0;
+  /* 여백 제거 */
+  background-color: #1a0b2e;
+  position: fixed;
+  /* 스크롤 방지 */
   top: 0;
   left: 0;
   overflow: hidden;
@@ -81,15 +84,23 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.3);
     opacity: 0.3;
@@ -97,8 +108,15 @@
 }
 
 @keyframes fadeInOut {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Error States */
@@ -177,9 +195,12 @@
 }
 
 @keyframes errorBounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -192,7 +213,8 @@
   left: 50%;
   transform: translateX(-50%);
   width: auto;
-  max-width: 60%; /* 화면의 60% 너비 */
+  max-width: 60%;
+  /* 화면의 60% 너비 */
   height: 100%;
   z-index: 1;
   background: #000;
@@ -205,8 +227,10 @@
   width: auto;
   height: 100%;
   max-width: 100%;
-  object-fit: contain; /* 비율 유지하면서 전체 표시 */
-  transform: scaleX(-1); /* 거울 모드 유지 */
+  object-fit: contain;
+  /* 비율 유지하면서 전체 표시 */
+  transform: scaleX(-1);
+  /* 거울 모드 유지 */
   display: block;
 }
 
@@ -231,14 +255,16 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 40px; /* 패딩을 늘려서 글씨 잘림 방지 */
+  padding: 40px;
+  /* 패딩을 늘려서 글씨 잘림 방지 */
   box-sizing: border-box;
 }
 
 /* Header: Title only (exit button removed) */
 .overlay-header {
   display: flex;
-  justify-content: center; /* 가운데 정렬 */
+  justify-content: center;
+  /* 가운데 정렬 */
   align-items: flex-start;
   padding-top: 20px;
 }
@@ -269,37 +295,43 @@
 
 .feedback-banner h2 {
   font-family: 'Anton', sans-serif;
-  font-size: 4.5rem; /* Increased from 3.5rem for better readability */
+  font-size: 4.5rem;
+  /* Increased from 3.5rem for better readability */
   margin: 0;
   color: #fff;
-  text-shadow: 
+  text-shadow:
     3px 3px 0 rgba(0, 0, 0, 0.8),
     0 0 20px rgba(0, 0, 0, 0.9),
-    0 0 40px rgba(0, 0, 0, 0.7); /* Enhanced shadow for better contrast */
-  animation: feedbackFadeIn 0.3s ease-in; /* Subtle fade-in animation */
+    0 0 40px rgba(0, 0, 0, 0.7);
+  /* Enhanced shadow for better contrast */
+  animation: feedbackFadeIn 0.3s ease-in;
+  /* Subtle fade-in animation */
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 /* Color coding for different feedback levels */
 .feedback-banner h2.feedback-perfect {
-  color: #00ff00; /* Green for perfect */
-  text-shadow: 
+  color: #00ff00;
+  /* Green for perfect */
+  text-shadow:
     3px 3px 0 rgba(0, 0, 0, 0.8),
     0 0 20px rgba(0, 255, 0, 0.6),
     0 0 40px rgba(0, 255, 0, 0.4);
 }
 
 .feedback-banner h2.feedback-good {
-  color: #ffff00; /* Yellow for good */
-  text-shadow: 
+  color: #ffff00;
+  /* Yellow for good */
+  text-shadow:
     3px 3px 0 rgba(0, 0, 0, 0.8),
     0 0 20px rgba(255, 255, 0, 0.6),
     0 0 40px rgba(255, 255, 0, 0.4);
 }
 
 .feedback-banner h2.feedback-needs-improvement {
-  color: #ffffff; /* White for needs improvement */
-  text-shadow: 
+  color: #ffffff;
+  /* White for needs improvement */
+  text-shadow:
     3px 3px 0 rgba(0, 0, 0, 0.8),
     0 0 20px rgba(255, 255, 255, 0.4),
     0 0 40px rgba(255, 255, 255, 0.2);
@@ -310,6 +342,202 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.overlay-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 20px;
+}
+
+/* Left: Score */
+.score-badge {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #00ffff;
+  border-radius: 20px;
+  padding: 15px 25px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+
+.score-badge .label {
+  font-size: 0.9rem;
+  padding: 15px 40px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(255, 0, 204, 0.4);
+  margin-top: 20px;
+}
+
+.error-retry-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(255, 0, 204, 0.6);
+}
+
+.error-retry-button:active {
+  transform: scale(0.98);
+}
+
+@keyframes errorBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 1. Video Layer - 세로 비율로 가운데 배치 */
+.video-fullscreen-wrapper {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 60%;
+  /* 화면의 60% 너비 */
+  height: 100%;
+  z-index: 1;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-fullscreen-wrapper video {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  /* 비율 유지하면서 전체 표시 */
+  transform: scaleX(-1);
+  /* 거울 모드 유지 */
+  display: block;
+}
+
+.video-fullscreen-wrapper .pose-canvas-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(-1);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 2. UI Overlay Layer */
+.coach-ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px;
+  /* 패딩을 늘려서 글씨 잘림 방지 */
+  box-sizing: border-box;
+}
+
+/* Header: Title only (exit button removed) */
+.overlay-header {
+  display: flex;
+  justify-content: center;
+  /* 가운데 정렬 */
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.title-badge {
+  background: linear-gradient(90deg, #ff00cc, #333399);
+  color: white;
+  padding: 10px 30px;
+  border-radius: 20px;
+  font-family: 'Anton', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  box-shadow: 0 5px 15px rgba(255, 0, 204, 0.5);
+}
+
+/* Center: Feedback */
+.overlay-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.feedback-banner {
+  text-align: center;
+}
+
+.feedback-banner h2 {
+  font-family: 'Anton', sans-serif;
+  font-size: 4.5rem;
+  /* Increased from 3.5rem for better readability */
+  margin: 0;
+  color: #fff;
+  text-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(0, 0, 0, 0.7);
+  /* Enhanced shadow for better contrast */
+  animation: feedbackFadeIn 0.3s ease-in;
+  /* Subtle fade-in animation */
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Color coding for different feedback levels */
+.feedback-banner h2.feedback-perfect {
+  color: #00ff00;
+  /* Green for perfect */
+  text-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 255, 0, 0.6),
+    0 0 40px rgba(0, 255, 0, 0.4);
+}
+
+.feedback-banner h2.feedback-good {
+  color: #ffff00;
+  /* Yellow for good */
+  text-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 255, 0, 0.6),
+    0 0 40px rgba(255, 255, 0, 0.4);
+}
+
+.feedback-banner h2.feedback-needs-improvement {
+  color: #ffffff;
+  /* White for needs improvement */
+  text-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 255, 255, 0.4),
+    0 0 40px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes feedbackFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -367,4 +595,29 @@
   font-family: 'Fredoka', sans-serif;
   font-weight: 700;
   color: #ff00cc;
+}
+
+/* Main Wrapper Layout */
+.coach-wrapper {
+  display: flex;
+  width: 80%;
+  height: 100%;
+  margin: 0 auto;
+  background: #1a1a2e;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 24px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.coach-wrapper.fullscreen {
+  width: 100%;
+  height: 100vh;
+  border-radius: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  margin: 0;
 }

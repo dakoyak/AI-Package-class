@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './PerspectiveSwitcher.module.css';
+import bookVideo from '../../assets/book.mp4';
 
 interface PerspectiveResponse {
   their_view: string;
@@ -17,7 +18,6 @@ export const PerspectiveSwitcher: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PerspectiveResponse | null>(null);
-
   const handleAnalyze = async () => {
     const trimmedSituation = situation.trim();
     const trimmedMyView = myView.trim();
@@ -87,6 +87,21 @@ export const PerspectiveSwitcher: React.FC = () => {
 
   return (
     <div className={styles.wrapper}>
+      {/* Loading Overlay */}
+      {loading && (
+        <div className={styles.loadingOverlay}>
+          <video
+            src={bookVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className={styles.loadingVideo}
+          />
+          <p className={styles.loadingText}>동화책이 친구의 이야기를 들려주고 있어요...</p>
+        </div>
+      )}
+
       <div className={styles.layout}>
         {/* 왼쪽 - 나의 입장 */}
         <section className={styles.leftPanel}>

@@ -1,9 +1,9 @@
-
 import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 import GlassButton from '../../shared/GlassButton';
 import { requestArtStyleRender, type ArtStyleResult } from '../../services/geminiTasks';
 import loadingVideo from '../../assets/lo.mp4';
+import DrawingBoard from './components/DrawingBoard';
 import './ArtWorkshop.css';
 
 type ArtStylePreset = {
@@ -67,11 +67,11 @@ function ArtWorkshop() {
   const [status, setStatus] = useState<JobStatus>('idle');
   const [resultImage, setResultImage] = useState<ArtStyleResult | null>(null);
   const [error, setError] = useState('');
+  const [showDrawingBoard, setShowDrawingBoard] = useState(false);
+  const [refinementPrompt, setRefinementPrompt] = useState('');
 
   const selectedPreset = stylePresets.find((preset) => preset.value === selectedStyle);
   const resultPreviewSrc = resolveResultPreview(resultImage);
-
-  const [refinementPrompt, setRefinementPrompt] = useState('');
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextFile = event.target.files?.[0] ?? null;
@@ -87,9 +87,24 @@ function ArtWorkshop() {
     }
   };
 
+  const handleDrawingSave = (imageData: string) => {
+    // Convert base64 to File object
+    fetch(imageData)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], "drawing.png", { type: "image/png" });
+        setFile(file);
+        setPreviewUrl(imageData);
+        setShowDrawingBoard(false);
+        setResultImage(null);
+        setError('');
+        setStatus('idle');
+      });
+  };
+
   const handleStyleTransfer = async () => {
     if (!file) {
-      setError('먼저 내 그림 파일을 업로드하세요.');
+      setError('먼저 내 그림 파일을 업로드하거나 직접 그려주세요.');
       return;
     }
 
@@ -119,17 +134,12 @@ function ArtWorkshop() {
 
     setStatus('running');
     setError('');
-    // Keep the previous result visible while regenerating if desired, or clear it. 
-    // Let's keep it to avoid flickering too much, or clear it to show loading.
-    // Clearing it feels more responsive to the "new action".
     setResultImage(null);
 
     try {
       const base64Image = await fileToBase64(file);
-
       const selectedPreset = stylePresets.find(p => p.value === selectedStyle);
 
-      // Combine original style prompt with user's refinement
       const combinedPrompt = refinementPrompt
         ? `${selectedPreset?.prompt ?? ''}. Additional requirements: ${refinementPrompt}`
         : (selectedPreset?.prompt ?? '');
@@ -145,7 +155,7 @@ function ArtWorkshop() {
     } catch (error) {
       const message = error instanceof Error ? error.message : '재생성에 실패했습니다.';
       setError(message);
-      setStatus('done'); // Return to done state to show error and allow retry
+      setStatus('done');
     }
   };
 
@@ -172,7 +182,6 @@ function ArtWorkshop() {
             <img src={resultPreviewSrc} alt={`${selectedPreset?.label} 스타일 결과물`} />
           </div>
 
-          {/* Refinement Section */}
           <div className="aw-refine-area">
             <input
               type="text"
@@ -216,25 +225,31 @@ function ArtWorkshop() {
   // Render Input View
   return (
     <div className="aw-page-wrapper">
-      {/* Header Row: Title & Execute Button */}
       <header className="aw-header-row">
         <div className="aw-header-info">
           <h3 className="aw-title">AI 아트 워크숍</h3>
           <p className="aw-desc">나의 그림을 명작 스타일로 변환해보세요.</p>
         </div>
 
-        <GlassButton
-          onClick={handleStyleTransfer}
-          disabled={status === 'running' || !file}
-          className="aw-execute-btn-top"
-        >
-          {status === 'running' ? '변환 중...' : ' 스타일 변환 실행'}
-        </GlassButton>
+        <div className="aw-header-actions">
+          <GlassButton
+            onClick={() => setShowDrawingBoard(true)}
+            className="aw-draw-btn-top"
+          >
+            🎨 직접 그리기
+          </GlassButton>
+
+          <GlassButton
+            onClick={handleStyleTransfer}
+            disabled={status === 'running' || !file}
+            className="aw-execute-btn-top"
+          >
+            {status === 'running' ? '변환 중...' : '✨ 스타일 변환 실행'}
+          </GlassButton>
+        </div>
       </header>
 
-      {/* Workspace Row: Sidebar & Main Box */}
       <div className="aw-workspace">
-        {/* Left Sidebar: Style Buttons */}
         <aside className="aw-sidebar">
           {stylePresets.map((preset) => (
             <button
@@ -248,7 +263,6 @@ function ArtWorkshop() {
           ))}
         </aside>
 
-        {/* Main Content Box */}
         <main className="aw-container">
           <div className="aw-upload-zone">
             {previewUrl ? (
@@ -257,11 +271,13 @@ function ArtWorkshop() {
                 <button className="aw-remove-btn" onClick={() => { setFile(null); setPreviewUrl(''); }}>✕</button>
               </div>
             ) : (
-              <label className="aw-upload-label">
-                <span className="aw-upload-icon">🖼️</span>
-                <span>이미지 업로드</span>
-                <input type="file" accept="image/*" onChange={handleFileChange} />
-              </label>
+              <div className="aw-upload-options">
+                <label className="aw-upload-label">
+                  <span className="aw-upload-icon">🖼️</span>
+                  <span>이미지 업로드</span>
+                  <input type="file" accept="image/*" onChange={handleFileChange} />
+                </label>
+              </div>
             )}
           </div>
         </main>
@@ -281,6 +297,13 @@ function ArtWorkshop() {
           />
           <p className="aw-loading-text">AI가 작품을 변환하고 있습니다...</p>
         </div>
+      )}
+
+      {showDrawingBoard && (
+        <DrawingBoard
+          onSave={handleDrawingSave}
+          onCancel={() => setShowDrawingBoard(false)}
+        />
       )}
     </div>
   );

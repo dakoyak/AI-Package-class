@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './ClassBoardPage.module.css';
-import type { ActivityEntry } from '../utils/activityLog';
-import { getActivityLog } from '../utils/activityLog';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
 
 type StudentData = {
   student_number: string;
@@ -10,22 +10,22 @@ type StudentData = {
 
 type TeacherData = {
   name: string;
+  grade?: string;
+  classroom?: string;
 };
 
 type LoggedInUser =
   | { type: 'student'; data: StudentData }
   | { type: 'teacher'; data: TeacherData };
 
-type BoardPost = {
-  id: string;
-  authorName: string;
-  role: LoggedInUser['type'];
-  activityLabel?: string;
-  message: string;
-  createdAt: string;
+type ClassPost = {
+  id: number;
+  title: string;
+  image_url?: string;
+  content?: string;
+  author_name: string;
+  created_at: string;
 };
-
-const POSTS_STORAGE_KEY = 'classBoardPosts';
 
 const parseStoredUser = (): LoggedInUser | null => {
   const raw = localStorage.getItem('loggedInUser');
@@ -40,116 +40,77 @@ const parseStoredUser = (): LoggedInUser | null => {
   }
 };
 
-const readPosts = (): BoardPost[] => {
-  try {
-    const raw = localStorage.getItem(POSTS_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as BoardPost[]) : [];
-  } catch {
-    return [];
-  }
-};
-
-const savePosts = (posts: BoardPost[]) => {
-  localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify(posts));
-};
-
 const formatTime = (iso: string) => {
   return new Date(iso).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
 export const ClassBoardPage = () => {
-  const [posts, setPosts] = useState<BoardPost[]>(() => readPosts());
-  const [activityId, setActivityId] = useState('');
-  const [message, setMessage] = useState('');
+  const [posts, setPosts] = useState<ClassPost[]>([]);
   const currentUser = parseStoredUser();
-  const activities = useMemo<ActivityEntry[]>(() => getActivityLog().slice(0, 12), []);
 
-  const handleSubmit = () => {
-    if (!currentUser) {
-      alert('로그인 후 글을 남길 수 있어요.');
-      return;
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (currentUser?.type === 'student') {
+        const [grade, classroom] = currentUser.data.student_number.split('-');
+        params.append('grade', grade);
+        params.append('classroom', classroom);
+      } else if (currentUser?.type === 'teacher') {
+        if (currentUser.data.grade) params.append('grade', currentUser.data.grade);
+        if (currentUser.data.classroom) params.append('classroom', currentUser.data.classroom);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/class-posts?${params}`);
+      const data = await response.json();
+      setPosts(data);
+    } catch (error) {
+      console.error('Error fetching class posts:', error);
     }
-    if (!message.trim()) {
-      alert('친구들에게 전하고 싶은 내용을 적어주세요.');
-      return;
-    }
-    const selectedActivity = activities.find((entry) => entry.id === activityId);
-    const newPost: BoardPost = {
-      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-      authorName:
-        currentUser.type === 'student'
-          ? `${currentUser.data.student_number} ${currentUser.data.name}`
-          : `${currentUser.data.name} 선생님`,
-      role: currentUser.type,
-      activityLabel: selectedActivity ? `${selectedActivity.category} · ${selectedActivity.label}` : undefined,
-      message: message.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    const updated = [newPost, ...posts];
-    setPosts(updated);
-    savePosts(updated);
-    setMessage('');
   };
+
+  if (!currentUser) {
+    return (
+      <div className={styles.boardShell}>
+        <div className={styles.loginMessage}>
+          <h2>로그인이 필요합니다</h2>
+          <p>우리 반 게시판을 보려면 로그인을 해주세요.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.boardShell}>
       <section className={styles.boardHero}>
-        <h1 className={styles.boardTitle}>학급 게시판</h1>
+        <h1 className={styles.boardTitle}>우리 반 앨범</h1>
         <p className={styles.boardText}>
-          방금 배운 내용을 친구들에게 소개하거나 서로 응원의 말을 남겨보세요. 즐거웠던 활동을 선택하면 자동으로 태그가 붙어요.
+          우리 반의 즐거운 추억들을 모아보세요!
         </p>
       </section>
 
-      <section className={styles.formCard}>
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>어떤 활동을 공유할까요?</label>
-          <select
-            className={styles.selectField}
-            value={activityId}
-            onChange={(event) => setActivityId(event.target.value)}
-          >
-            <option value="">활동을 선택하거나 건너뛰기</option>
-            {activities.map((entry) => (
-              <option key={entry.id} value={entry.id}>
-                {entry.category} · {entry.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>친구들에게 남길 말</label>
-          <textarea
-            className={styles.textArea}
-            placeholder="오늘 배운 점이나 느낀 점을 적어보세요."
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-          />
-        </div>
-
-        <div className={styles.submitRow}>
-          <button
-            className={styles.primaryButton}
-            onClick={handleSubmit}
-            disabled={!currentUser || !message.trim()}
-          >
-            게시글 올리기
-          </button>
-        </div>
-      </section>
-
       {posts.length === 0 ? (
-        <div className={styles.emptyBoard}>첫 번째 글을 남겨 보세요!</div>
+        <div className={styles.emptyBoard}>등록된 게시글이 없습니다.</div>
       ) : (
-        <div className={styles.postList}>
+        <div className={styles.cardGrid}>
           {posts.map((post) => (
-            <article key={post.id} className={styles.postCard}>
-              <div className={styles.postHeader}>
-                <span className={styles.postAuthor}>{post.authorName}</span>
-                <span className={styles.postTime}>{formatTime(post.createdAt)}</span>
+            <article key={post.id} className={styles.cardItem}>
+              {post.image_url ? (
+                <div className={styles.cardImage} style={{ backgroundImage: `url(${post.image_url})` }} />
+              ) : (
+                <div className={styles.cardImagePlaceholder}>📷</div>
+              )}
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>{post.title}</h3>
+                <p className={styles.cardBody}>{post.content}</p>
+                <div className={styles.cardFooter}>
+                  <span className={styles.cardAuthor}>{post.author_name}</span>
+                  <span className={styles.cardTime}>{formatTime(post.created_at)}</span>
+                </div>
               </div>
-              {post.activityLabel && <span className={styles.postTag}>{post.activityLabel}</span>}
-              <p className={styles.postBody}>{post.message}</p>
             </article>
           ))}
         </div>

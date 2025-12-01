@@ -4,17 +4,12 @@ import edge_tts
 
 
 async def main():
-    if len(sys.argv) < 2:
-        print("Usage: python tts.py <output_file>")
+    if len(sys.argv) < 3:
+        print("Usage: python tts.py <text> <output_file>")
         sys.exit(1)
 
-    # Read text from stdin to avoid encoding issues on Windows
-    text = sys.stdin.read().strip()
-    if not text:
-        print("Error: No text provided in stdin")
-        sys.exit(1)
-
-    output_file = sys.argv[1]
+    text = sys.argv[1]
+    output_file = sys.argv[2]
 
     # Voice: ko-KR-InJoonNeural (Male - Deep and authoritative)
     # Pitch: -13Hz (Deeper voice for royal authority)

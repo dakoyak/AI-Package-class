@@ -32,10 +32,6 @@ export interface WritingGuideRequest {
  * Requests an image generation task from the 'gemini-pro-vision' model.
  * It takes an existing image, a style prompt, and a description to guide the generation.
  */
-/**
- * Requests an artistic SVG interpretation from the 'gemini-1.5-flash' model.
- * It takes an existing image, a style prompt, and a description to guide the generation.
- */
 export const requestArtStyleRender = async (
   params: ArtStyleRequest
 ): Promise<ArtStyleResult> => {
@@ -62,7 +58,13 @@ export const requestArtStyleRender = async (
         2. Redraw this exact scene, maintaining the original composition.
         3. Apply the following artistic style to the new image: "${params.stylePrompt}".
         
-        The output must be a high-quality image that looks like a finished artwork in the requested style.
+        IMPORTANT:
+        - Do NOT generate a generic "Starry Night" or famous painting.
+        - You MUST preserve the original subject and composition of the user's drawing.
+        - Only apply the *technique* (brush strokes, color palette, texture) of the requested style.
+        - If the style is "Van Gogh", do NOT draw a starry night sky unless it is in the original drawing.
+        
+        The output must be a high-quality image that looks like a finished artwork in the requested style, but strictly based on the input image.
       `.trim();
 
       const response = await fetch(
@@ -185,7 +187,8 @@ export const requestArtStyleRender = async (
  * a creative reinterpretation or discussion prompt.
  */
 export const requestSparringScenario = async (
-  params: SparringScenarioRequest
+  params: SparringScenarioRequest,
+  onUpdate?: (text: string) => void
 ): Promise<string> => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -207,9 +210,18 @@ export const requestSparringScenario = async (
       4. 예상되는 반론과 재반론
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    const result = await model.generateContentStream(prompt);
+
+    let fullText = '';
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      fullText += chunkText;
+      if (onUpdate) {
+        onUpdate(fullText);
+      }
+    }
+
+    return fullText;
   } catch (error) {
     console.error("Sparring Scenario Error:", error);
     throw new Error("스파링 시나리오 생성에 실패했습니다.");
@@ -221,7 +233,8 @@ export const requestSparringScenario = async (
  * Takes grade, theme, and genre to generate a structured writing worksheet.
  */
 export const requestWritingGuide = async (
-  params: WritingGuideRequest
+  params: WritingGuideRequest,
+  onUpdate?: (text: string) => void
 ): Promise<string> => {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -244,9 +257,18 @@ export const requestWritingGuide = async (
       5. 퇴고하기 (체크리스트 포함)
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    const result = await model.generateContentStream(prompt);
+
+    let fullText = '';
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      fullText += chunkText;
+      if (onUpdate) {
+        onUpdate(fullText);
+      }
+    }
+
+    return fullText;
   } catch (error) {
     console.error("Writing Guide Error:", error);
     throw new Error("글쓰기 가이드 생성에 실패했습니다.");

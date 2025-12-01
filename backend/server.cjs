@@ -1,13 +1,39 @@
 const path = require("path");
+const fs = require("fs");
+try { fs.writeFileSync('server_debug.log', 'Server starting...\n'); } catch (e) { }
+
+process.on('exit', (code) => {
+  try { fs.appendFileSync('server_debug.log', `Process exited with code: ${code}\n`); } catch (e) { }
+  console.log(`Process exited with code: ${code}`);
+});
+
+process.on('uncaughtException', (err) => {
+  try { fs.appendFileSync('server_debug.log', `Uncaught Exception: ${err.message}\n${err.stack}\n`); } catch (e) { }
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  try { fs.appendFileSync('server_debug.log', `Unhandled Rejection: ${reason}\n`); } catch (e) { }
+  console.error('Unhandled Rejection:', reason);
+});
+
+
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
-const fs = require("fs");
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const initializeDatabase = require("./database/init.cjs");
-const db = initializeDatabase();
+let db;
+try {
+  db = initializeDatabase();
+  fs.appendFileSync('server_debug.log', 'Database initialized.\n');
+} catch (err) {
+  try { fs.appendFileSync('server_debug.log', 'Database init error: ' + err.message + '\n'); } catch (e) { }
+  console.error(err);
+}
 const { spawn } = require("child_process");
 
 const app = express();
@@ -70,24 +96,24 @@ const discussionRoutes = require("./routes/discussion.cjs");
 app.use("/api/discussion", discussionRoutes);
 
 // Sejong Historical Interview routes
-const sejongRoutes = require("../src/HistoricalInterview/backend/sejong-routes.cjs");
+const sejongRoutes = require("./routes/sejong.cjs");
 app.use("/api", sejongRoutes(sejongModel, sejongKnowledgeBase));
 
 // TTS endpoint using edge-tts
 app.post("/api/tts", async (req, res) => {
   const { text } = req.body;
-  
+
   if (!text) {
     return res.status(400).json({ error: "Text is required" });
   }
 
   try {
-    const pythonScript = path.join(__dirname, "../src/HistoricalInterview/backend/tts.py");
+    const pythonScript = path.join(__dirname, "utils/tts.py");
     const outputFile = path.join(__dirname, `../temp_audio_${Date.now()}.mp3`);
-    
+
     if (!fs.existsSync(pythonScript)) {
       console.warn("TTS script not found, using browser fallback");
-      return res.status(503).json({ 
+      return res.status(503).json({
         error: "TTS service not available",
         message: "Using browser speech synthesis"
       });
@@ -95,9 +121,9 @@ app.post("/api/tts", async (req, res) => {
 
     // Run Python TTS script
     const python = spawn("python", [pythonScript, text, outputFile]);
-    
+
     let errorOutput = "";
-    
+
     python.stderr.on("data", (data) => {
       errorOutput += data.toString();
     });
@@ -106,17 +132,17 @@ app.post("/api/tts", async (req, res) => {
       if (code === 0 && fs.existsSync(outputFile)) {
         // Read the generated audio file
         const audioBuffer = fs.readFileSync(outputFile);
-        
+
         // Clean up temp file
         fs.unlinkSync(outputFile);
-        
+
         // Send audio response
         res.set("Content-Type", "audio/mpeg");
         res.send(audioBuffer);
       } else {
         console.error("TTS generation failed:", errorOutput);
         // Fallback to browser TTS
-        res.status(503).json({ 
+        res.status(503).json({
           error: "TTS generation failed",
           message: "Using browser speech synthesis"
         });
@@ -125,14 +151,14 @@ app.post("/api/tts", async (req, res) => {
 
     python.on("error", (error) => {
       console.error("Failed to start Python process:", error);
-      res.status(503).json({ 
+      res.status(503).json({
         error: "TTS service error",
         message: "Using browser speech synthesis"
       });
     });
   } catch (error) {
     console.error("TTS endpoint error:", error);
-    res.status(503).json({ 
+    res.status(503).json({
       error: "TTS service error",
       message: "Using browser speech synthesis"
     });
@@ -469,7 +495,8 @@ app.use((err, req, res, next) => {
 });
 
 // Initialize database and start server
-const db = initializeDatabase();
+// Database already initialized at the top
+
 
 app.listen(PORT, () => {
   console.log(`✓ Server is running on port ${PORT}`);
@@ -478,3 +505,8 @@ app.listen(PORT, () => {
   );
   console.log(`✓ Health check available at: http://localhost:${PORT}/health`);
 });
+
+// Keep process alive
+setInterval(() => {
+  // console.log('Heartbeat');
+}, 10000);
