@@ -8,6 +8,9 @@ async def main():
         print("Usage: python tts.py <output_file>")
         sys.exit(1)
 
+    print(f"DEBUG: Python executable: {sys.executable}", file=sys.stderr)
+    print(f"DEBUG: sys.path: {sys.path}", file=sys.stderr)
+
     # Read text from stdin to avoid encoding issues on Windows
     text = sys.stdin.read().strip()
     if not text:

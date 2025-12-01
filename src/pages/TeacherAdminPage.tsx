@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '../routes/paths';
 import styles from './TeacherAdminPage.module.css';
-import AuthHeader from '../shared/AuthHeader';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
 
@@ -12,12 +9,6 @@ type LoggedInTeacher = {
   username: string;
   grade?: string;
   classroom?: string;
-};
-
-type Notice = {
-  id: number;
-  content: string;
-  created_at: string;
 };
 
 type Student = {
@@ -40,9 +31,6 @@ type Tab = 'class-management' | 'lesson-create' | 'class-board' | 'teacher-board
 
 function TeacherAdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('class-management');
-  const [notices, setNotices] = useState<Notice[]>([]);
-  const [newNotice, setNewNotice] = useState('');
-  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
   const [teacherPosts, setTeacherPosts] = useState<TeacherPost[]>([]);
   const [loggedInTeacher, setLoggedInTeacher] = useState<LoggedInTeacher | null>(null);
@@ -82,20 +70,25 @@ function TeacherAdminPage() {
   });
 
   const checkLoginStatus = () => {
-    const storedUser = localStorage.getItem('loggedInUser');
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        if (parsed.type === 'teacher') {
-          setLoggedInTeacher(parsed.data);
-        } else {
+    try {
+      const storedUser = localStorage.getItem('loggedInUser');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed.type === 'teacher') {
+            setLoggedInTeacher(parsed.data);
+          } else {
+            setLoggedInTeacher(null);
+          }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
           setLoggedInTeacher(null);
         }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+      } else {
         setLoggedInTeacher(null);
       }
-    } else {
+    } catch (error) {
+      console.warn('localStorage access denied:', error);
       setLoggedInTeacher(null);
     }
   };
@@ -107,7 +100,6 @@ function TeacherAdminPage() {
   }, []);
 
   useEffect(() => {
-    fetchNotices();
     fetchStudents();
     fetchTeacherPosts();
   }, []);
@@ -216,60 +208,7 @@ function TeacherAdminPage() {
     }
   };
 
-  const fetchNotices = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/notices`);
-      const data = await response.json();
-      setNotices(data);
-    } catch (error) {
-      console.error('Error fetching notices:', error);
-    }
-  };
 
-  const addNotice = async () => {
-    if (!newNotice.trim()) {
-      alert('공지사항 내용을 입력해주세요.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/notices`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: newNotice,
-          created_by: loggedInTeacher?.id,
-        }),
-      });
-
-      if (response.ok) {
-        setNewNotice('');
-        fetchNotices();
-        alert('공지사항이 추가되었습니다.');
-      }
-    } catch (error) {
-      console.error('Error adding notice:', error);
-      alert('공지사항 추가에 실패했습니다.');
-    }
-  };
-
-  const deleteNotice = async (id: number) => {
-    if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/notices/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchNotices();
-        alert('공지사항이 삭제되었습니다.');
-      }
-    } catch (error) {
-      console.error('Error deleting notice:', error);
-      alert('공지사항 삭제에 실패했습니다.');
-    }
-  };
 
   const fetchStudents = async () => {
     try {
@@ -513,7 +452,12 @@ function TeacherAdminPage() {
             <h2>우리반 게시판</h2>
 
             <div className={styles.postForm}>
-              <h3>게시글 작성</h3>
+              <div className={styles.postFormHeader}>
+                <h3>게시글 작성</h3>
+                <button onClick={addClassPost} className={styles.addButton}>
+                  게시글 등록
+                </button>
+              </div>
               <div className={styles.formGrid}>
                 <input
                   type="text"
@@ -540,9 +484,6 @@ function TeacherAdminPage() {
                   onChange={(e) => setClassPostForm({ ...classPostForm, content: e.target.value })}
                   className={styles.contentTextarea}
                 />
-                <button onClick={addClassPost} className={styles.addButton}>
-                  게시글 등록
-                </button>
               </div>
             </div>
 
@@ -625,49 +566,8 @@ function TeacherAdminPage() {
     }
   };
 
-  const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0);
-
-  useEffect(() => {
-    if (notices.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentNoticeIndex((prev) => (prev + 1) % notices.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [notices]);
-
   return (
     <div className={`${styles.adminPage} ${styles['transparent-app']}`}>
-      <header className={styles.header}>
-        <Link to={ROUTES.home} className={styles.homeLink}>
-          <div className={styles.homeButton}>
-            <img src="/src/assets/eraser.png" alt="홈으로" />
-          </div>
-        </Link>
-        <div className={styles.noticeBar}>
-          <div className={styles.noticeContent} key={currentNoticeIndex}>
-            <p className={styles.noticeText}>
-              {notices.length > 0 ? notices[currentNoticeIndex].content : "등록된 공지사항이 없습니다."}
-            </p>
-          </div>
-          <button
-            className={styles.settingsButton}
-            onClick={() => {
-              console.log('Settings button clicked');
-              setIsNoticeModalOpen(true);
-            }}
-          >
-            <img
-              src="/src/assets/setting.png"
-              alt="설정"
-              style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }}
-            />
-          </button>
-        </div>
-        <AuthHeader />
-      </header>
-
       <div className={styles.mainContent}>
         <aside className={styles.sidebar}>
           <button
@@ -698,33 +598,6 @@ function TeacherAdminPage() {
 
         <main className={styles.content}>{renderTabContent()}</main>
       </div>
-
-      {isNoticeModalOpen && (
-        <div className={styles.modalBackdrop} onClick={() => setIsNoticeModalOpen(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h2>공지사항 관리</h2>
-            <div className={styles.noticeInput}>
-              <textarea
-                placeholder="새 공지사항 입력"
-                value={newNotice}
-                onChange={(e) => setNewNotice(e.target.value)}
-              />
-              <button onClick={addNotice}>추가</button>
-            </div>
-            <div className={styles.noticeList}>
-              {notices.map((notice) => (
-                <div key={notice.id} className={styles.noticeItem}>
-                  <span>{notice.content}</span>
-                  <button onClick={() => deleteNotice(notice.id)}>삭제</button>
-                </div>
-              ))}
-            </div>
-            <button onClick={() => setIsNoticeModalOpen(false)} className={styles.closeButton}>
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

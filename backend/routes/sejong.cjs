@@ -54,7 +54,7 @@ async function retrieveKnowledge(question) {
   }
 }
 
-module.exports = function (sejongModel, _unusedKnowledgeBase) {
+module.exports = function (sejongModel, _unusedKnowledgeBase, pythonBin) {
   const router = require("express").Router();
 
   // Ask Sejong endpoint
@@ -110,7 +110,7 @@ ${retrievedContext || "관련 자료 없음."}
     const ttsScriptPath = path.join(__dirname, "../utils/tts.py");
 
     // Spawn python process to generate audio
-    const pythonProcess = spawn("python", [ttsScriptPath, text, outputPath]);
+    const pythonProcess = spawn(pythonBin, [ttsScriptPath, text, outputPath]);
 
     pythonProcess.on("close", (code) => {
       if (code !== 0) {

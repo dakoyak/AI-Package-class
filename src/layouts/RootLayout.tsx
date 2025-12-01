@@ -1,59 +1,8 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { creativityModules, getCreativityModulePath } from '../features/creativity/modules';
+import { NavLink, Outlet } from 'react-router-dom';
 import { ROUTES } from '../routes/paths';
 import styles from './RootLayout.module.css';
 import AuthHeader from '../shared/AuthHeader';
-
-type NavigationItem = {
-  label: string;
-  path: string;
-  submenu?: Array<{
-    path: string;
-    menuLabel: string;
-    summary: string;
-  }>;
-};
-
-const immersiveNavItems = [
-  {
-    path: ROUTES.immersive.history,
-    menuLabel: "AI 역사 인터뷰",
-    summary: "세종대왕과 실시간 대화 체험",
-  },
-  {
-    path: ROUTES.immersive.coach,
-    menuLabel: "AI 피트니스 코치",
-    summary: "포즈 인식으로 운동 피드백 받기",
-  },
-];
-
-const collaborationNavItems = [
-  {
-    path: ROUTES.collaboration.smartDiscussion,
-    menuLabel: "곰곰이 스마트 토론",
-    summary: "음성 인식으로 갈등을 중재하는 토론 수업",
-  },
-];
-
-const navItems: NavigationItem[] = [
-  { label: "홈", path: ROUTES.home },
-  {
-    label: "창의력",
-    path: ROUTES.creativity.root,
-  },
-  { label: "AI 리터러시", path: ROUTES.aiLiteracy.root },
-  {
-    label: "몰입형 체험",
-    path: ROUTES.immersive.history,
-  },
-  {
-    label: "논리/협업",
-    path: ROUTES.collaboration.smartDiscussion,
-  },
-  { label: "나의활동 기록", path: ROUTES.dashboard.activityLog },
-  { label: "학급 게시판", path: ROUTES.dashboard.classBoard },
-];
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
 
@@ -66,6 +15,8 @@ type Notice = {
 function RootLayout() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [currentNoticeIndex, setCurrentNoticeIndex] = useState(0);
+  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
+  const [newNotice, setNewNotice] = useState('');
 
   useEffect(() => {
     fetchNotices();
@@ -78,6 +29,48 @@ function RootLayout() {
       setNotices(data);
     } catch (error) {
       console.error('Error fetching notices:', error);
+    }
+  };
+
+  const addNotice = async () => {
+    if (!newNotice.trim()) {
+      alert('공지사항 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/notices`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newNotice }),
+      });
+
+      if (response.ok) {
+        setNewNotice('');
+        fetchNotices();
+        alert('공지사항이 추가되었습니다.');
+      }
+    } catch (error) {
+      console.error('Error adding notice:', error);
+      alert('공지사항 추가에 실패했습니다.');
+    }
+  };
+
+  const deleteNotice = async (id: number) => {
+    if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/notices/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        fetchNotices();
+        alert('공지사항이 삭제되었습니다.');
+      }
+    } catch (error) {
+      console.error('Error deleting notice:', error);
+      alert('공지사항 삭제에 실패했습니다.');
     }
   };
 
@@ -94,15 +87,20 @@ function RootLayout() {
   const [isTeacher, setIsTeacher] = useState(false);
 
   const checkUserRole = () => {
-    const storedUser = localStorage.getItem('loggedInUser');
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        setIsTeacher(parsed.type === 'teacher');
-      } catch {
+    try {
+      const storedUser = localStorage.getItem('loggedInUser');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          setIsTeacher(parsed.type === 'teacher');
+        } catch {
+          setIsTeacher(false);
+        }
+      } else {
         setIsTeacher(false);
       }
-    } else {
+    } catch (error) {
+      console.warn('localStorage access denied:', error);
       setIsTeacher(false);
     }
   };
@@ -128,6 +126,18 @@ function RootLayout() {
               {notices.length > 0 ? notices[currentNoticeIndex].content : "등록된 공지사항이 없습니다."}
             </p>
           </div>
+          {isTeacher && (
+            <button
+              className={styles.settingsButton}
+              onClick={() => setIsNoticeModalOpen(true)}
+            >
+              <img
+                src="/src/assets/setting.png"
+                alt="공지 관리"
+                style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }}
+              />
+            </button>
+          )}
         </div>
 
         {isTeacher && (
@@ -141,6 +151,36 @@ function RootLayout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+
+      {isNoticeModalOpen && (
+        <div className={styles.modalBackdrop} onClick={() => setIsNoticeModalOpen(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>공지사항 관리</h2>
+              <button onClick={() => setIsNoticeModalOpen(false)} className={styles.closeButton}>
+                &times;
+              </button>
+            </div>
+            <div className={styles.noticeInput}>
+              <textarea
+                placeholder="새 공지사항 입력"
+                value={newNotice}
+                onChange={(e) => setNewNotice(e.target.value)}
+                className={styles.noticeTextarea}
+              />
+              <button onClick={addNotice} className={styles.addButton}>추가</button>
+            </div>
+            <div className={styles.noticeList}>
+              {notices.map((notice) => (
+                <div key={notice.id} className={styles.noticeItem}>
+                  <span>{notice.content}</span>
+                  <button onClick={() => deleteNotice(notice.id)} className={styles.deleteButton}>삭제</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

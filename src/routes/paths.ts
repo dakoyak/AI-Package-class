@@ -29,6 +29,7 @@ export const ROUTES = {
     root: ROUTE_BASE.dashboard,
     activityLog: `${ROUTE_BASE.dashboard}/activity-log`,
     classBoard: `${ROUTE_BASE.dashboard}/class-board`,
+    teacherAdmin: `${ROUTE_BASE.dashboard}/teacher-admin`,
   },
   immersive: {
     root: ROUTE_BASE.immersive,

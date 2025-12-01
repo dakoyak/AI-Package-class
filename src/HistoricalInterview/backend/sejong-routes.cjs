@@ -24,6 +24,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const DEFAULT_PYTHON_BIN = path.join(
+  process.env.USERPROFILE || "",
+  "AppData",
+  "Local",
+  "Programs",
+  "Python",
+  "Python311",
+  "python.exe"
+);
+const PYTHON_BIN = process.env.PYTHON_BIN || DEFAULT_PYTHON_BIN;
+
 async function getEmbedding(text) {
   try {
     const response = await openai.embeddings.create({
@@ -111,16 +122,35 @@ ${retrievedContext || "관련 자료 없음."}
 
     // Spawn python process to generate audio
     // Pass text via stdin to avoid encoding issues on Windows
-    const pythonProcess = spawn("python", [ttsScriptPath, outputPath]);
+    const pythonProcess = spawn(PYTHON_BIN, [ttsScriptPath, outputPath], {
+      windowsHide: true,
+    });
+
+    pythonProcess.on('error', (err) => {
+      console.error('Failed to start python process. Make sure Python is installed and in your PATH.', err);
+      if (!res.headersSent) {
+        res.status(500).json({ message: 'Failed to start TTS process' });
+      }
+    });
 
     // Write text to stdin
     pythonProcess.stdin.write(text);
     pythonProcess.stdin.end();
 
+    let stderrData = "";
+    pythonProcess.stderr.on("data", (data) => {
+      stderrData += data.toString();
+      console.error(`TTS Python Error: ${data.toString()}`);
+    });
+
     pythonProcess.on("close", (code) => {
       if (code !== 0) {
         console.error("TTS generation failed with code:", code);
-        return res.status(500).json({ message: "TTS generation failed" });
+        return res.status(500).json({
+          message: "TTS generation failed",
+          code: code,
+          error: stderrData
+        });
       }
 
       res.sendFile(outputPath, (err) => {
@@ -132,10 +162,6 @@ ${retrievedContext || "관련 자료 없음."}
           if (unlinkErr) console.error("Error deleting temp file:", unlinkErr);
         });
       });
-    });
-
-    pythonProcess.stderr.on("data", (data) => {
-      console.error(`TTS Python Error: ${data}`);
     });
   });
 

@@ -98,12 +98,17 @@ const initialSignupForm: SignupFormState = {
 };
 
 const readStoredUser = (): LoggedInUser | null => {
-  const storedUser = localStorage.getItem('loggedInUser');
-  if (!storedUser) return null;
   try {
-    const parsed = JSON.parse(storedUser);
-    return isLoggedInUser(parsed) ? parsed : null;
-  } catch {
+    const storedUser = localStorage.getItem('loggedInUser');
+    if (!storedUser) return null;
+    try {
+      const parsed = JSON.parse(storedUser);
+      return isLoggedInUser(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  } catch (error) {
+    console.warn('localStorage access denied:', error);
     return null;
   }
 };
@@ -150,7 +155,11 @@ function AuthFooter() {
     }
 
     setLoggedInUser(userPayload);
-    localStorage.setItem('loggedInUser', JSON.stringify(userPayload));
+    try {
+      localStorage.setItem('loggedInUser', JSON.stringify(userPayload));
+    } catch (error) {
+      console.warn('localStorage write denied:', error);
+    }
     setUsername('');
     setPassword('');
     resetSignupForm();
@@ -228,7 +237,11 @@ function AuthFooter() {
 
   const handleLogout = () => {
     setLoggedInUser(null);
-    localStorage.removeItem('loggedInUser');
+    try {
+      localStorage.removeItem('loggedInUser');
+    } catch (error) {
+      console.warn('localStorage remove denied:', error);
+    }
     alert('로그아웃되었습니다.');
   };
   const renderLoggedInUI = useCallback(() => {

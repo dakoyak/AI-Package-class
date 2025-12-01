@@ -37,7 +37,19 @@ try {
 const { spawn } = require("child_process");
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.GEMINI_PORT || process.env.PORT || 5001;
+
+// Prefer explicit Python path to avoid WindowsApps stub
+const DEFAULT_PYTHON_BIN = path.join(
+  process.env.USERPROFILE || "",
+  "AppData",
+  "Local",
+  "Programs",
+  "Python",
+  "Python311",
+  "python.exe"
+);
+const PYTHON_BIN = process.env.PYTHON_BIN || DEFAULT_PYTHON_BIN;
 
 const GEMINI_KEY =
   process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -86,6 +98,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Challenge routes (OpenAI guardrail)
 const challengeRoutes = require("./routes/challenge.cjs");
@@ -95,9 +108,59 @@ app.use("/api/challenge", challengeRoutes);
 const discussionRoutes = require("./routes/discussion.cjs");
 app.use("/api/discussion", discussionRoutes);
 
+const adminRoutes = require("./routes/admin.cjs");
+app.use("/api/admin", adminRoutes(db));
+
+// Multer configuration for file uploads
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: function (req, file, cb) {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'));
+    }
+  }
+});
+
+// Image upload endpoint
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({ url: fileUrl });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'Failed to upload file' });
+  }
+});
+
 // Sejong Historical Interview routes
 const sejongRoutes = require("./routes/sejong.cjs");
-app.use("/api", sejongRoutes(sejongModel, sejongKnowledgeBase));
+app.use("/api", sejongRoutes(sejongModel, sejongKnowledgeBase, DEFAULT_PYTHON_BIN));
 
 // TTS endpoint using edge-tts
 app.post("/api/tts", async (req, res) => {
@@ -109,7 +172,7 @@ app.post("/api/tts", async (req, res) => {
 
   try {
     const pythonScript = path.join(__dirname, "utils/tts.py");
-    const outputFile = path.join(__dirname, `../temp_audio_${Date.now()}.mp3`);
+    const outputFile = path.join(__dirname, `temp_audio_${Date.now()}.mp3`);
 
     if (!fs.existsSync(pythonScript)) {
       console.warn("TTS script not found, using browser fallback");
@@ -119,48 +182,103 @@ app.post("/api/tts", async (req, res) => {
       });
     }
 
+    // Check if Python exists
+    if (!fs.existsSync(PYTHON_BIN)) {
+      console.warn("Python not found at:", PYTHON_BIN);
+      return res.status(503).json({
+        error: "Python not found",
+        message: "Using browser speech synthesis"
+      });
+    }
+
     // Run Python TTS script
-    const python = spawn("python", [pythonScript, text, outputFile]);
+    const python = spawn(PYTHON_BIN, [pythonScript, text, outputFile], {
+      windowsHide: true,
+    });
 
     let errorOutput = "";
+    let hasResponded = false;
 
     python.stderr.on("data", (data) => {
       errorOutput += data.toString();
     });
 
     python.on("close", (code) => {
+      if (hasResponded) return;
+      hasResponded = true;
+
       if (code === 0 && fs.existsSync(outputFile)) {
-        // Read the generated audio file
-        const audioBuffer = fs.readFileSync(outputFile);
+        try {
+          // Read the generated audio file
+          const audioBuffer = fs.readFileSync(outputFile);
 
-        // Clean up temp file
-        fs.unlinkSync(outputFile);
+          // Clean up temp file
+          fs.unlinkSync(outputFile);
 
-        // Send audio response
-        res.set("Content-Type", "audio/mpeg");
-        res.send(audioBuffer);
+          // Send audio response
+          res.set("Content-Type", "audio/mpeg");
+          res.send(audioBuffer);
+        } catch (fileError) {
+          console.error("Error reading audio file:", fileError);
+          res.status(503).json({
+            error: "Failed to read audio file",
+            message: "Using browser speech synthesis"
+          });
+        }
       } else {
         console.error("TTS generation failed:", errorOutput);
+        // Clean up temp file if it exists
+        if (fs.existsSync(outputFile)) {
+          try {
+            fs.unlinkSync(outputFile);
+          } catch (e) {
+            console.error("Failed to clean up temp file:", e);
+          }
+        }
         // Fallback to browser TTS
         res.status(503).json({
           error: "TTS generation failed",
-          message: "Using browser speech synthesis"
+          message: "Using browser speech synthesis",
+          details: errorOutput
         });
       }
     });
 
     python.on("error", (error) => {
+      if (hasResponded) return;
+      hasResponded = true;
       console.error("Failed to start Python process:", error);
       res.status(503).json({
         error: "TTS service error",
-        message: "Using browser speech synthesis"
+        message: "Using browser speech synthesis",
+        details: error.message
       });
     });
+
+    // Timeout after 10 seconds
+    setTimeout(() => {
+      if (!hasResponded) {
+        hasResponded = true;
+        python.kill();
+        if (fs.existsSync(outputFile)) {
+          try {
+            fs.unlinkSync(outputFile);
+          } catch (e) {
+            console.error("Failed to clean up temp file:", e);
+          }
+        }
+        res.status(503).json({
+          error: "TTS timeout",
+          message: "Using browser speech synthesis"
+        });
+      }
+    }, 10000);
   } catch (error) {
     console.error("TTS endpoint error:", error);
     res.status(503).json({
       error: "TTS service error",
-      message: "Using browser speech synthesis"
+      message: "Using browser speech synthesis",
+      details: error.message
     });
   }
 });

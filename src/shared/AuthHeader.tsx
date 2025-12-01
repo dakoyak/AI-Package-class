@@ -1,6 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '../routes/paths';
 import styles from './AuthHeader.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5001';
@@ -97,8 +95,34 @@ const initialSignupForm: SignupFormState = {
     teacher_classroom: '',
 };
 
+// Safe localStorage access wrapper
+const safeLocalStorage = {
+    getItem: (key: string): string | null => {
+        try {
+            return localStorage.getItem(key);
+        } catch (error) {
+            console.warn('localStorage access denied:', error);
+            return null;
+        }
+    },
+    setItem: (key: string, value: string): void => {
+        try {
+            localStorage.setItem(key, value);
+        } catch (error) {
+            console.warn('localStorage write denied:', error);
+        }
+    },
+    removeItem: (key: string): void => {
+        try {
+            localStorage.removeItem(key);
+        } catch (error) {
+            console.warn('localStorage remove denied:', error);
+        }
+    }
+};
+
 const readStoredUser = (): LoggedInUser | null => {
-    const storedUser = localStorage.getItem('loggedInUser');
+    const storedUser = safeLocalStorage.getItem('loggedInUser');
     if (!storedUser) return null;
     try {
         const parsed = JSON.parse(storedUser);
@@ -150,7 +174,7 @@ function AuthHeader() {
         }
 
         setLoggedInUser(userPayload);
-        localStorage.setItem('loggedInUser', JSON.stringify(userPayload));
+        safeLocalStorage.setItem('loggedInUser', JSON.stringify(userPayload));
         setUsername('');
         setPassword('');
         resetSignupForm();
@@ -226,7 +250,7 @@ function AuthHeader() {
 
     const handleLogout = () => {
         setLoggedInUser(null);
-        localStorage.removeItem('loggedInUser');
+        safeLocalStorage.removeItem('loggedInUser');
         window.dispatchEvent(new Event('auth-change'));
         alert('로그아웃되었습니다.');
     };
@@ -307,14 +331,14 @@ function AuthHeader() {
                 <input
                     type="text"
                     placeholder="담당 학년"
-                    className={styles.modalInput}
+                    className={`${styles.modalInput} ${styles.halfInput}`}
                     value={signupForm.teacher_grade}
                     onChange={(event) => setSignupForm((prev) => ({ ...prev, teacher_grade: event.target.value }))}
                 />
                 <input
                     type="text"
                     placeholder="담당 반"
-                    className={styles.modalInput}
+                    className={`${styles.modalInput} ${styles.halfInput}`}
                     value={signupForm.teacher_classroom}
                     onChange={(event) => setSignupForm((prev) => ({ ...prev, teacher_classroom: event.target.value }))}
                 />

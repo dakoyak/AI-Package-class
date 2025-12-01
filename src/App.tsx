@@ -19,6 +19,8 @@ import SmartDiscussion from './features/smartDiscussion/SmartDiscussion';
 import ActivityLogPage from './pages/ActivityLogPage';
 import ClassBoardPage from './pages/ClassBoardPage';
 import ActivityTracker from './components/ActivityTracker';
+import AdminPage from './pages/AdminPage';
+import TeacherAdminPage from './pages/TeacherAdminPage';
 
 // Imported from router.jsx
 import RootLayout from './layouts/RootLayout';
@@ -48,9 +50,9 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <ErrorBoundary>
           <AiLiteracyFullscreenProvider>
             <GlobalStyle />
             <>
@@ -84,13 +86,15 @@ function App() {
                   <Route path={ROUTES.collaboration.perspective} element={<PerspectiveSwitcher />} />
                   <Route path={ROUTES.dashboard.activityLog} element={<ActivityLogPage />} />
                   <Route path={ROUTES.dashboard.classBoard} element={<ClassBoardPage />} />
+                  <Route path={ROUTES.dashboard.teacherAdmin} element={<TeacherAdminPage />} />
+                  <Route path="/admin" element={<AdminPage />} />
                 </Route>
               </Routes>
             </>
           </AiLiteracyFullscreenProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 

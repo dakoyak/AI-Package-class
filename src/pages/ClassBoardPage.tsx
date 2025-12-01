@@ -28,14 +28,19 @@ type ClassPost = {
 };
 
 const parseStoredUser = (): LoggedInUser | null => {
-  const raw = localStorage.getItem('loggedInUser');
-  if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw);
-    if (parsed?.type === 'student' && parsed?.data?.student_number) return parsed;
-    if (parsed?.type === 'teacher' && parsed?.data?.name) return parsed;
-    return null;
-  } catch {
+    const raw = localStorage.getItem('loggedInUser');
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed?.type === 'student' && parsed?.data?.student_number) return parsed;
+      if (parsed?.type === 'teacher' && parsed?.data?.name) return parsed;
+      return null;
+    } catch {
+      return null;
+    }
+  } catch (error) {
+    console.warn('localStorage access denied:', error);
     return null;
   }
 };

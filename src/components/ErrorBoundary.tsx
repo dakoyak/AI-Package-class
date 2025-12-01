@@ -17,14 +17,14 @@ const ErrorContainer = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: 48px;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 `;
 
 const ErrorCard = styled.div`
   background-color: white;
-  padding: ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
+  padding: 48px;
+  border-radius: 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   text-align: center;
@@ -32,31 +32,31 @@ const ErrorCard = styled.div`
 
 const ErrorIcon = styled.div`
   font-size: 80px;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: 24px;
 `;
 
 const ErrorTitle = styled.h1`
-  color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.fonts.sizes.large};
+  color: #1a1a1a;
+  font-size: 32px;
   font-weight: 700;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
+  margin-bottom: 24px;
 `;
 
 const ErrorMessage = styled.p`
-  color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.fonts.sizes.medium};
+  color: #1a1a1a;
+  font-size: 24px;
   line-height: 1.6;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  margin-bottom: 32px;
   opacity: 0.8;
 `;
 
 const ReloadButton = styled.button`
-  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  font-size: ${({ theme }) => theme.fonts.sizes.medium};
+  padding: 24px 32px;
+  background-color: #87CEEB;
+  border-radius: 16px;
+  font-size: 24px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
+  color: #1a1a1a;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   

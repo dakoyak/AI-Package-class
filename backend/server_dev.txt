@@ -521,3 +521,43 @@ OpenAI API Key loaded: sk-pr...
 ✓ CORS enabled for: http://localhost:5173
 ✓ Health check available at: http://localhost:5001/health
 Connected to the SQLite database.
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+곰곰이 대화 요청: { message: '곰돌이한테 전달하고 있고 아 안녕', historyLength: 1 }
+OpenAI API 호출 시작
+곰곰이 응답 생성 완료: 안녕, 친구! 오늘은 어떤 이야기를 나누고 싶어?...
+[Guardrail/OpenAI] Request: "미키마우스가 스파이더맨 옷을 입고 춤추는 그림 그려줘" (Type: dalle)
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+🔍 Retrieved context for "훈민정음은 왜 만드셨어요?": 
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+🔍 Retrieved context for "마지막으로 편의점 갔다 올게": 
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.

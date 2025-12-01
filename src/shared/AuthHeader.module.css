@@ -30,21 +30,6 @@
     justify-content: center;
     cursor: pointer;
     font-size: 0.9rem;
-    line-height: 1;
-    margin-left: 0.1rem;
-    transition: transform 0.2s ease, background 0.2s ease;
-    padding: 0;
-}
-
-.logoutButton:hover {
-    background: #ff0000;
-    transform: scale(1.2);
-}
-
-.loginButton {
-    background: #4caf50;
-    color: white;
-    border: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     font-weight: 700;
@@ -125,10 +110,9 @@
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
-.modalActions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+.halfInput {
+    flex: 1;
+    min-width: 0;
 }
 
 .modalButton {

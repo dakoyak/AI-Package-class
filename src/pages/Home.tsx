@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useState, useEffect, CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import changImg from "../assets/chang.png";
 import aiLiteracyBg from "../assets/ai-literacy.png";
@@ -129,10 +129,40 @@ const hasSubmenu = (
   Array.isArray(tile.submenu) && tile.submenu.length > 0;
 
 function Home() {
+  const [isTeacher, setIsTeacher] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        const stored = localStorage.getItem("loggedInUser");
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            setIsTeacher(parsed.type === "teacher");
+          } catch {
+            setIsTeacher(false);
+          }
+        } else {
+          setIsTeacher(false);
+        }
+      } catch (error) {
+        console.warn('localStorage access denied:', error);
+        setIsTeacher(false);
+      }
+    };
+
+    checkAuth();
+    window.addEventListener("auth-change", checkAuth);
+    return () => window.removeEventListener("auth-change", checkAuth);
+  }, []);
+
+  const displayTiles = [...tileData];
+  // Admin tile removed as per user request
+
   return (
     <section className={`${styles.board} ${styles["transparent-app"]}`}>
       <div className={styles.tileGrid}>
-        {tileData.map((tile) => {
+        {displayTiles.map((tile) => {
           if (hasSubmenu(tile)) {
             const backgroundStyle: CSSProperties | undefined =
               tile.backgroundImage

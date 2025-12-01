@@ -1,8 +1,30 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../../uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
 module.exports = (db) => {
+  // ... (existing routes) ...
+
   // 공지사항 목록 조회
   router.get('/notices', (req, res) => {
     db.all('SELECT * FROM notices ORDER BY created_at DESC', [], (err, rows) => {
@@ -196,9 +218,16 @@ module.exports = (db) => {
     });
   });
 
-  // 학급 게시판 글 작성
-  router.post('/class-posts', (req, res) => {
-    const { title, image_url, content, author_id, author_name, author_type, grade, classroom } = req.body;
+  // 학급 게시판 글 작성 (파일 업로드 포함)
+  router.post('/class-posts', upload.single('image'), (req, res) => {
+    const { title, content, author_id, author_name, author_type, grade, classroom } = req.body;
+    let image_url = null;
+
+    if (req.file) {
+      image_url = `/uploads/${req.file.filename}`;
+    } else if (req.body.image_url) {
+      image_url = req.body.image_url;
+    }
 
     if (!title || !author_id || !author_name) {
       return res.status(400).json({ message: '필수 정보를 입력해주세요.' });
@@ -206,7 +235,7 @@ module.exports = (db) => {
 
     db.run(
       'INSERT INTO class_posts (title, image_url, content, author_id, author_name, author_type, grade, classroom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [title, image_url || null, content || null, author_id, author_name, author_type, grade || null, classroom || null],
+      [title, image_url, content || null, author_id, author_name, author_type, grade || null, classroom || null],
       function (err) {
         if (err) {
           console.error('Error creating class post:', err.message);
@@ -215,6 +244,7 @@ module.exports = (db) => {
         res.status(201).json({
           id: this.lastID,
           title,
+          image_url,
           message: '게시글이 작성되었습니다.',
         });
       }

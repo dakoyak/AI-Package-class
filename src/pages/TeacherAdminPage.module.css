@@ -210,6 +210,17 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.postFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.postFormHeader h3 {
+  margin: 0;
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -259,7 +270,7 @@
 .studentList td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #000000;
 }
 
 .studentList th {
@@ -303,14 +314,15 @@
 
 .contentTextarea {
   width: 100%;
-  min-height: 150px;
+  min-height: 400px;
+  min-width: 1463px;
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 8px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;

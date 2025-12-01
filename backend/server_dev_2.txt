@@ -537,3 +537,29 @@ OpenAI API Key loaded: sk-pr...
 ✓ CORS enabled for: http://localhost:5173
 ✓ Health check available at: http://localhost:5001/health
 Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.cjs ""`[39m
+[dotenv@17.2.3] injecting env (6) from ..\.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+✓ Gemini client initialized with model: models/gemini-2.5-flash
+✓ Sejong knowledge base loaded
+✓ OpenAI client initialized
+OpenAI API Key loaded: sk-pr...
+✓ Server is running on port 5001
+✓ CORS enabled for: http://localhost:5173
+✓ Health check available at: http://localhost:5001/health
+Connected to the SQLite database.
+TTS Python Error: Python 
+TTS generation failed with code: 9009
+TTS Python Error: Python 
+TTS generation failed with code: 9009
