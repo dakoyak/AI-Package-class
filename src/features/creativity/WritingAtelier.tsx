@@ -70,9 +70,12 @@ function WritingAtelier() {
           <article className={styles.output}>
             <ReactMarkdown>{output}</ReactMarkdown>
           </article>
-          <div className={styles.actionWrapper} style={{ marginTop: '2rem' }}>
+          <div className={styles.actionWrapper} style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
             <GlassButton onClick={handleReset}>
               다시 작성하기
+            </GlassButton>
+            <GlassButton onClick={() => window.print()}>
+              프린트 하기
             </GlassButton>
           </div>
         </div>

@@ -52,8 +52,22 @@ class SimpleVectorDB {
   async load() {
     const filePath = path.join(this.folderPath, 'index.json');
     if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf-8');
-      this.items = JSON.parse(data);
+      try {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        if (data.trim().length === 0) {
+          console.warn('⚠️  index.json is empty');
+          this.items = [];
+          return;
+        }
+        this.items = JSON.parse(data);
+        console.log(`✅ Loaded ${this.items.length} items from vector DB`);
+      } catch (error) {
+        console.error('❌ Failed to parse index.json:', error);
+        this.items = [];
+      }
+    } else {
+      console.warn('⚠️  index.json not found at', filePath);
+      this.items = [];
     }
   }
 }

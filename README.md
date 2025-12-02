@@ -202,6 +202,23 @@ npm start
 
 - `npm start`: Node.js 서버를 실행합니다.
 - `npm run dev`: `nodemon`을 사용하여 개발 모드로 서버를 실행합니다 (코드 변경 시 자동 재시작).
+- `npm run build:vdb`: 세종대왕 인터뷰용 벡터 DB를 빌드합니다 (OpenAI API 키 필요).
+
+##  중요: 세종대왕 인터뷰 기능 설정
+
+세종대왕 인터뷰 기능을 사용하려면 벡터 DB를 먼저 빌드해야 합니다:
+
+```bash
+cd backend
+npm run build:vdb
+```
+
+이 명령어는 `sejong_knowledge_base.txt`의 내용을 벡터 임베딩으로 변환하여 `vector_db/index.json`에 저장합니다.
+
+**참고:**
+- OpenAI API 키가 `.env` 파일에 설정되어 있어야 합니다.
+- 처음 한 번만 실행하면 되며, 지식 베이스를 업데이트할 때마다 다시 실행하세요.
+- 벡터 DB가 없으면 자동으로 텍스트 기반 fallback을 사용합니다.
 
 ##  기여하기
 

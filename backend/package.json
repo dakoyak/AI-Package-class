@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.cjs",
     "dev": "nodemon server.cjs",
+    "build:vdb": "node scripts/build_vdb.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
