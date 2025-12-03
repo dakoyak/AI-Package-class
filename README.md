@@ -3,7 +3,8 @@
 
 AI Creative Classroom은 초등학생들을 위한 AI 기반 창의 융합 교육 플랫폼입니다. 학생들은 다양한 AI 기술을 직접 체험하고, 역사, 신체 활동, 협업 등 여러 분야에 걸쳐 창의력과 문제 해결 능력을 기를 수 있습니다.
 
-![Project Screenshot](public/images/backgrounds/Gemini_Generated_Image_afsj4nafsj4nafsj.png)
+<img width="1917" height="907" alt="image" src="https://github.com/user-attachments/assets/17152878-81a5-41c4-80e9-ecf55398e7ed" />
+
 
 ##  주요 기능
 
